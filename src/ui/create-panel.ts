@@ -14,6 +14,7 @@ import { bindEdgeMapping } from './bind-edge-mapping.js';
 import { bindTips } from './bind-tips.js';
 import { bindEdgeLabels } from './bind-edge-labels.js';
 import { bindBackground } from './bind-background.js';
+import { togglePanel } from './toggle-panel.js';
 
 function applyPanelStyles(el: HTMLElement): void {
   const isMobile = window.innerWidth < 600;
@@ -38,6 +39,8 @@ export function createPanel(
   const pane = new Pane({ title: 'TRICLOCK v' + __APP_VERSION__ });
   pane.element.style.display = 'none';
   applyPanelStyles(pane.element);
+
+  pane.addButton({ title: 'Close Config' }).on('click', () => { togglePanel(pane); });
 
   const tabPages = pane.addTab({ pages: [
     { title: 'Visual' },
@@ -84,6 +87,8 @@ export function createPanel(
     a.click();
     URL.revokeObjectURL(url);
   });
+
+  pane.addButton({ title: 'Close Config' }).on('click', () => { togglePanel(pane); });
 
   return pane;
 }
