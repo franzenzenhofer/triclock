@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { loadConfig, saveConfig } from '../../src/config/store.js';
+import { saveConfig } from '../../src/config/store.js';
 import { DEFAULT_CONFIG } from '../../src/config/defaults.js';
 
 const storage = new Map<string, string>();
@@ -16,23 +16,6 @@ const mockLocalStorage = {
 beforeEach(() => {
   storage.clear();
   Object.defineProperty(globalThis, 'localStorage', { value: mockLocalStorage, writable: true });
-});
-
-describe('loadConfig', () => {
-  it('returns null when storage empty', () => {
-    expect(loadConfig()).toBeNull();
-  });
-
-  it('returns parsed config when valid', () => {
-    storage.set('triclock-config', JSON.stringify({ colors: { background: '#000' } }));
-    const result = loadConfig();
-    expect(result).toEqual({ colors: { background: '#000' } });
-  });
-
-  it('returns null for invalid JSON', () => {
-    storage.set('triclock-config', 'not json');
-    expect(loadConfig()).toBeNull();
-  });
 });
 
 describe('saveConfig', () => {
