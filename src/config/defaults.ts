@@ -135,7 +135,7 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
     fontSizeMin: 14,
     fontFamily: "Georgia, 'Times New Roman', serif",
     fontWeight: 700,
-    alpha: 0.13,
+    alpha: 0.25,
     visible: true,
     showSeconds: false,
     color: '#e0e0e8',

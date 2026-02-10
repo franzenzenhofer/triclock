@@ -2,6 +2,7 @@ import type { TrichronoConfig } from '../types/index.js';
 import { getCurrentTime } from '../time/get-current-time.js';
 import { formatDigital } from '../time/format-digital.js';
 import { configToHash } from '../config/hash.js';
+import { computeOverlayLayout } from './compute-overlay-layout.js';
 
 function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
@@ -55,21 +56,13 @@ async function shareImage(
   }
 }
 
-function updateLayout(link: HTMLElement, config: TrichronoConfig): void {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const size = Math.min(w, h) * config.geometry.sizeRatio;
-  const cy = h / 2;
-  const dt = config.digitalTime;
-  const clockFontSize = Math.max(dt.fontSizeMin, size * dt.fontSizeRatio);
-  const clockY = cy + size * dt.yOffsetRatio;
-  const shareFontSize = Math.max(10, clockFontSize * 0.6);
-  const rawTop = clockY + clockFontSize * 0.6 + shareFontSize * 0.6;
-  const top = Math.min(rawTop, h - shareFontSize - 40);
+const SHARE_OPACITY = 0.35;
 
-  link.style.top = String(top) + 'px';
-  link.style.left = String(w / 2) + 'px';
-  link.style.fontSize = String(shareFontSize) + 'px';
+function updateLayout(link: HTMLElement, config: TrichronoConfig): void {
+  const layout = computeOverlayLayout(window.innerWidth, window.innerHeight, config);
+  link.style.top = String(layout.shareLinkY) + 'px';
+  link.style.left = String(layout.shareLinkX) + 'px';
+  link.style.fontSize = String(layout.shareFontSize) + 'px';
 }
 
 export function createShareLink(
@@ -86,10 +79,14 @@ export function createShareLink(
     'font-family:' + dt.fontFamily,
     'font-weight:' + String(dt.fontWeight),
     'color:' + dt.color,
-    'opacity:' + String(dt.alpha),
-    'z-index:10',
+    'opacity:' + String(SHARE_OPACITY),
+    'z-index:100',
     'user-select:none',
     'text-decoration:underline',
+    'min-height:44px',
+    'display:flex',
+    'align-items:center',
+    'white-space:nowrap',
   ].join(';');
 
   updateLayout(link, config);

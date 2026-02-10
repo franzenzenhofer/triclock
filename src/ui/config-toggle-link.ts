@@ -39,7 +39,7 @@ export function createConfigToggleLink(
     'cursor:pointer',
     'color:' + dt.color,
     'opacity:' + String(Math.min(dt.alpha * 1.2, 0.2)),
-    'z-index:10',
+    'z-index:100',
     'user-select:none',
     'line-height:0',
     'min-width:44px',
