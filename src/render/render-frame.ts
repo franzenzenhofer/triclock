@@ -10,6 +10,7 @@ import { drawTriangleLayers } from './draw-triangle-layers.js';
 import { drawTips } from './draw-tips.js';
 import { drawVertexDots } from './draw-vertex-dots.js';
 import { drawDigitalTime } from './draw-digital-time.js';
+import { drawEdgeLabels } from './draw-edge-labels.js';
 
 export function renderFrame(
   ctx: CanvasRenderingContext2D,
@@ -27,8 +28,9 @@ export function renderFrame(
 
   const tips = drawAllEdges(ctx, verts, fracs, config.edgeMapping, config);
 
-  drawTriangleLayers(ctx, verts, tips, baseHsl, config);
+  drawTriangleLayers(ctx, verts, tips, baseHsl, config, state.size);
   drawTips(ctx, tips, state.size, config);
   drawVertexDots(ctx, verts, config);
+  drawEdgeLabels(ctx, verts, state.size, config);
   drawDigitalTime(ctx, time, state.cx, state.cy, state.size, config);
 }

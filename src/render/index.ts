@@ -14,4 +14,5 @@ export { drawTriangleLayers } from './draw-triangle-layers.js';
 export { drawTips } from './draw-tips.js';
 export { drawVertexDots } from './draw-vertex-dots.js';
 export { drawDigitalTime } from './draw-digital-time.js';
+export { drawEdgeLabels } from './draw-edge-labels.js';
 export { renderFrame } from './render-frame.js';

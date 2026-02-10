@@ -10,6 +10,7 @@ export function drawLayerGroup(
   hueStep: number,
   base: BaseHsl,
   config: TrichronoConfig,
+  size: number,
 ): void {
   for (const layer of layers) {
     if (!layer.visible) continue;
@@ -21,8 +22,9 @@ export function drawLayerGroup(
         ctx, trio[0], trio[1], trio[2],
         hue, base.s, base.l * layer.lightnessMultiplier,
         layer.fillAlpha, layer.borderAlpha,
-        config.triangles.glowPasses, config.hsl,
+        config.hsl,
         0, 0,
+        size,
       );
     }
   }
