@@ -55,16 +55,27 @@ async function shareImage(
   }
 }
 
+function positionBelowClock(link: HTMLElement, config: TrichronoConfig): void {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const size = Math.min(w, h) * config.geometry.sizeRatio;
+  const cy = h / 2;
+  const clockY = cy + size * config.digitalTime.yOffsetRatio;
+  const clockFontSize = Math.max(config.digitalTime.fontSizeMin, size * config.digitalTime.fontSizeRatio);
+  const top = clockY + clockFontSize * 0.8;
+  link.style.top = String(top) + 'px';
+  link.style.left = String(w / 2) + 'px';
+}
+
 export function createShareLink(
   canvas: HTMLCanvasElement,
   config: TrichronoConfig,
 ): HTMLElement {
   const link = document.createElement('div');
-  link.textContent = 'Share';
+  link.textContent = 'share your time';
   link.style.cssText = [
     'position:fixed',
-    'bottom:8px',
-    'right:60px',
+    'transform:translateX(-50%)',
     'cursor:pointer',
     'font:400 11px sans-serif',
     'color:' + config.digitalTime.color,
@@ -72,6 +83,9 @@ export function createShareLink(
     'z-index:10',
     'user-select:none',
   ].join(';');
+
+  positionBelowClock(link, config);
+  window.addEventListener('resize', () => { positionBelowClock(link, config); }, { passive: true });
 
   link.addEventListener('click', () => {
     void shareImage(canvas, config);
