@@ -1,0 +1,128 @@
+import type { TrichronoConfig } from '../types/index.js';
+
+export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
+  colors: Object.freeze({
+    background: '#0b0b12',
+    overlay: '#15152a',
+    frame: '#222230',
+    hours: '#ff2a6d',
+    minutes: '#05d9e8',
+    seconds: '#d1f7a0',
+    inactive: '#444455',
+    text: '#e0e0e8',
+  }),
+  geometry: Object.freeze({
+    sizeRatio: 0.42,
+    botY: 0.58,
+    halfBase: 0.95,
+  }),
+  hsl: Object.freeze({
+    satBase: 90,
+    satRange: 10,
+    litBase: 55,
+    litAmplitude: 20,
+    brightSat: 100,
+    brightLitBoost: 30,
+    brightLitMax: 92,
+  }),
+  scales: Object.freeze({
+    majorTickRatio: 0.035,
+    minorTickRatio: 0.018,
+    majorWidth: 2.5,
+    minorWidth: 1,
+    activeAlpha: 0.9,
+    inactiveAlpha: 0.2,
+    labelOffsetPx: 16,
+    labelSizeRatio: 0.04,
+    labelActiveAlpha: 0.7,
+    labelInactiveAlpha: 0.25,
+    hoursDivisions: 24,
+    minutesDivisions: 60,
+    secondsDivisions: 60,
+    hoursMajorEvery: 6,
+    minutesMajorEvery: 15,
+    secondsMajorEvery: 15,
+  }),
+  edgeProgress: Object.freeze({
+    passes: Object.freeze([
+      Object.freeze({
+        width: 14,
+        alpha: 0.5,
+        stops: Object.freeze([
+          Object.freeze({ position: 0, alphaHex: '00' }),
+          Object.freeze({ position: 0.5, alphaHex: '33' }),
+          Object.freeze({ position: 1, alphaHex: '99' }),
+        ]),
+      }),
+      Object.freeze({
+        width: 8,
+        alpha: 0.7,
+        stops: Object.freeze([
+          Object.freeze({ position: 0, alphaHex: '00' }),
+          Object.freeze({ position: 0.6, alphaHex: '55' }),
+          Object.freeze({ position: 1, alphaHex: 'cc' }),
+        ]),
+      }),
+    ]),
+    coreWidth: 3.5,
+    coreAlpha: 1.0,
+    coreTailLength: 0.06,
+  }),
+  triangles: Object.freeze({
+    sectorLayers: Object.freeze([
+      Object.freeze({ hueOffset: 180, lightnessMultiplier: 0.85, fillAlpha: 0.2, borderAlpha: 0.45 }),
+    ]),
+    crossLayers: Object.freeze([
+      Object.freeze({ hueOffset: 60, lightnessMultiplier: 0.95, fillAlpha: 0.3, borderAlpha: 0.55 }),
+    ]),
+    wedgeLayers: Object.freeze([
+      Object.freeze({ hueOffset: 90, lightnessMultiplier: 1.0, fillAlpha: 0.35, borderAlpha: 0.65 }),
+    ]),
+    primaryLayer: Object.freeze({
+      hueOffset: 0,
+      lightnessMultiplier: 1.1,
+      fillAlpha: 0.75,
+      borderAlpha: 1.0,
+    }),
+    glowPasses: Object.freeze([
+      Object.freeze({ width: 16, alphaMultiplier: 0.08 }),
+      Object.freeze({ width: 10, alphaMultiplier: 0.15 }),
+      Object.freeze({ width: 6, alphaMultiplier: 0.30 }),
+      Object.freeze({ width: 3, alphaMultiplier: 0.60 }),
+      Object.freeze({ width: 1.5, alphaMultiplier: 1.00 }),
+    ]),
+    compositeOp: 'screen' as GlobalCompositeOperation,
+  }),
+  tips: Object.freeze({
+    hours: Object.freeze({ radius: 4, glowRadiusRatio: 0.06 }),
+    minutes: Object.freeze({ radius: 3.5, glowRadiusRatio: 0.05 }),
+    seconds: Object.freeze({ radius: 3, glowRadiusRatio: 0.05 }),
+    vertexRadius: 2.5,
+    vertexAlpha: 0.5,
+    innerRadiusRatio: 0.45,
+    innerAlpha: 0.8,
+    gradientStops: Object.freeze([
+      Object.freeze({ position: 0, alphaHex: 'ff' }),
+      Object.freeze({ position: 0.2, alphaHex: 'aa' }),
+      Object.freeze({ position: 0.5, alphaHex: '44' }),
+      Object.freeze({ position: 1, alphaHex: '00' }),
+    ]),
+  }),
+  digitalTime: Object.freeze({
+    yOffsetRatio: 0.28,
+    fontSizeRatio: 0.06,
+    fontSizeMin: 14,
+    fontFamily: "Georgia, 'Times New Roman', serif",
+    fontWeight: 700,
+    alpha: 0.13,
+    visible: true,
+  }),
+  background: Object.freeze({
+    overlayRadiusRatio: 1.5,
+  }),
+  edgeMapping: Object.freeze({
+    AB: 'hours',
+    BC: 'minutes',
+    CA: 'seconds',
+  }),
+} as const);

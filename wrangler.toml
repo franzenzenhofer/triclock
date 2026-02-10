@@ -1,0 +1,10 @@
+name = "trichrono"
+compatibility_date = "2026-02-01"
+account_id = "ecf21e85812dfa5b2a35245257fc71f5"
+
+[[routes]]
+pattern = "trichrono.franzai.com"
+custom_domain = true
+
+[assets]
+directory = "dist"

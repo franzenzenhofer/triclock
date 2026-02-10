@@ -1,0 +1,356 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>TRICHRONO — Analog 24H Triangle Clock</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body{
+      background:#0b0b12;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    canvas{ display:block; }
+  </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<script>
+(() => {
+  'use strict';
+
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  let W = 0, H = 0, cx = 0, cy = 0, size = 0, dpr = 1;
+
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    W = window.innerWidth;
+    H = window.innerHeight;
+
+    canvas.width = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+
+    // draw in CSS pixels (not device pixels)
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    cx = W / 2;
+    cy = H / 2;
+    size = Math.min(W, H) * 0.42;
+  }
+
+  window.addEventListener('resize', resize, { passive: true });
+  resize();
+
+  function getTriangle() {
+    const topY = cy - size;
+    const botY = cy + size * 0.58;
+    const halfBase = size * 0.95;
+    return {
+      A: { x: cx, y: topY },
+      B: { x: cx - halfBase, y: botY },
+      C: { x: cx + halfBase, y: botY },
+    };
+  }
+
+  const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+  const dist = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
+
+  function drawLine(a, b, color, width, alpha = 1) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawCircle(p, r, color, alpha = 1) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Smooth glow circle — radial gradient, no shadowBlur
+  function drawGlowCircle(p, r, color, glowR) {
+    ctx.save();
+    const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+    grad.addColorStop(0, color);
+    grad.addColorStop(0.2, color + 'aa');
+    grad.addColorStop(0.5, color + '44');
+    grad.addColorStop(1, color + '00');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    drawCircle(p, r, color, 1);
+    drawCircle(p, r * 0.45, '#fff', 0.8);
+  }
+
+  function drawText(text, x, y, font, color, alpha = 1) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.font = font;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  }
+
+  function drawScale(from, to, count, color, activeCount, majorEvery) {
+    const dx = to.x - from.x, dy = to.y - from.y;
+    const len = Math.hypot(dx, dy);
+    const nx = -dy / len, ny = dx / len;
+
+    for (let i = 0; i <= count; i++) {
+      const t = i / count;
+      const p = lerp(from, to, t);
+      const isMajor = (i % majorEvery) === 0;
+      const isActive = i <= activeCount;
+
+      const tickLen = isMajor ? size * 0.035 : size * 0.018;
+      const inner = { x: p.x + nx * 2, y: p.y + ny * 2 };
+      const outer = { x: p.x + nx * (2 + tickLen), y: p.y + ny * (2 + tickLen) };
+
+      drawLine(
+        inner, outer,
+        isActive ? color : '#444455',
+        isMajor ? 2.5 : 1,
+        isActive ? 0.9 : 0.2
+      );
+
+      if (isMajor && i > 0 && i < count) {
+        const lp = { x: p.x + nx * (tickLen + 16), y: p.y + ny * (tickLen + 16) };
+        drawText(
+          String(i),
+          lp.x, lp.y,
+          `${Math.max(10, size * 0.04)}px 'Helvetica Neue', Arial, sans-serif`,
+          isActive ? color : '#444455',
+          isActive ? 0.7 : 0.25
+        );
+      }
+    }
+  }
+
+  // Smooth edge progress — gradient strokes, no shadowBlur
+  function drawEdgeProgress(from, to, progress, color) {
+    const endP = lerp(from, to, progress);
+
+    // Wide soft glow
+    ctx.save();
+    const grad = ctx.createLinearGradient(from.x, from.y, endP.x, endP.y);
+    grad.addColorStop(0, color + '00');
+    grad.addColorStop(0.5, color + '33');
+    grad.addColorStop(1, color + '99');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 14;
+    ctx.lineCap = 'round';
+    ctx.globalAlpha = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(endP.x, endP.y);
+    ctx.stroke();
+    ctx.restore();
+
+    // Medium glow
+    ctx.save();
+    const grad2 = ctx.createLinearGradient(from.x, from.y, endP.x, endP.y);
+    grad2.addColorStop(0, color + '00');
+    grad2.addColorStop(0.6, color + '55');
+    grad2.addColorStop(1, color + 'cc');
+    ctx.strokeStyle = grad2;
+    ctx.lineWidth = 8;
+    ctx.lineCap = 'round';
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(endP.x, endP.y);
+    ctx.stroke();
+    ctx.restore();
+
+    // Sharp bright core
+    const tipStart = lerp(from, to, Math.max(0, progress - 0.06));
+    drawLine(tipStart, endP, color, 3.5, 1.0);
+
+    return endP;
+  }
+
+  function hslToHex(h, s, l) {
+    h = ((h % 360) + 360) % 360;
+    s = Math.max(0, Math.min(100, s)) / 100;
+    l = Math.max(0, Math.min(100, l)) / 100;
+
+    const a = s * Math.min(l, 1 - l);
+    const f = (n) => {
+      const k = (n + h / 30) % 12;
+      const c = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * c).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  }
+
+  function triPath(p1, p2, p3) {
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.lineTo(p3.x, p3.y);
+    ctx.closePath();
+  }
+
+  // Smooth neon triangle — multi-pass strokes instead of shadowBlur
+  function drawColorTriangle(p1, p2, p3, hue, sat, lit, fillAlpha, borderAlpha) {
+    const main = hslToHex(hue, sat, lit);
+    const bright = hslToHex(hue, 100, Math.min(92, lit + 30));
+
+    // Fill
+    ctx.save();
+    triPath(p1, p2, p3);
+    ctx.fillStyle = main;
+    ctx.globalAlpha = fillAlpha;
+    ctx.fill();
+    ctx.restore();
+
+    // Glow passes
+    const glowPasses = [
+      { width: 16,  alpha: borderAlpha * 0.08 },
+      { width: 10,  alpha: borderAlpha * 0.15 },
+      { width: 6,   alpha: borderAlpha * 0.30 },
+      { width: 3,   alpha: borderAlpha * 0.60 },
+      { width: 1.5, alpha: borderAlpha * 1.00 },
+    ];
+
+    for (const pass of glowPasses) {
+      ctx.save();
+      triPath(p1, p2, p3);
+      ctx.strokeStyle = bright;
+      ctx.lineWidth = pass.width;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = pass.alpha;
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  const pad2 = (n) => String(n).padStart(2, '0');
+
+  function frame() {
+    // Solid background fill (alpha:false)
+    ctx.fillStyle = '#0b0b12';
+    ctx.fillRect(0, 0, W, H);
+
+    // Subtle radial overlay
+    const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, size * 1.5);
+    bgGrad.addColorStop(0, '#15152a');
+    bgGrad.addColorStop(1, '#0b0b12');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    const { A, B, C } = getTriangle();
+
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    const ms = now.getMilliseconds();
+
+    const h = hours + minutes / 60 + seconds / 3600;
+    const m = minutes + seconds / 60 + ms / 60000;
+    const s = seconds + ms / 1000;
+
+    const colH = '#ff2a6d';
+    const colM = '#05d9e8';
+    const colS = '#d1f7a0';
+
+    const baseHue = (s / 60) * 360;
+    const baseSat = 90 + (m / 60) * 10;
+    const baseLit = 55 + Math.sin((h / 24) * Math.PI) * 20;
+
+    // Frame
+    drawLine(A, B, '#222230', 1.5, 0.25);
+    drawLine(B, C, '#222230', 1.5, 0.25);
+    drawLine(C, A, '#222230', 1.5, 0.25);
+
+    // Scales
+    drawScale(A, B, 24, colH, Math.floor(h), 6);
+    drawScale(B, C, 60, colM, Math.floor(m), 15);
+    drawScale(C, A, 60, colS, Math.floor(s), 15);
+
+    // Edge progress
+    const hTip = drawEdgeProgress(A, B, h / 24, colH);
+    const mTip = drawEdgeProgress(B, C, m / 60, colM);
+    const sTip = drawEdgeProgress(C, A, s / 60, colS);
+
+    // === ALL THE TRIANGLES ===
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+
+    // Layer 1: Sector triangles
+    drawColorTriangle(A, B, hTip, (baseHue + 180) % 360, baseSat, baseLit * 0.85, 0.2, 0.45);
+    drawColorTriangle(B, C, mTip, (baseHue + 240) % 360, baseSat, baseLit * 0.85, 0.2, 0.45);
+    drawColorTriangle(C, A, sTip, (baseHue + 300) % 360, baseSat, baseLit * 0.85, 0.2, 0.45);
+
+    // Layer 2: Cross triangles
+    drawColorTriangle(A, mTip, sTip, (baseHue + 60)  % 360, baseSat, baseLit * 0.95, 0.3, 0.55);
+    drawColorTriangle(B, hTip, sTip, (baseHue + 120) % 360, baseSat, baseLit * 0.95, 0.3, 0.55);
+    drawColorTriangle(C, hTip, mTip, (baseHue + 180) % 360, baseSat, baseLit * 0.95, 0.3, 0.55);
+
+    // Layer 3: Wedge triangles
+    drawColorTriangle(A, hTip, sTip, (baseHue + 90)  % 360, baseSat, baseLit, 0.35, 0.65);
+    drawColorTriangle(B, hTip, mTip, (baseHue + 150) % 360, baseSat, baseLit, 0.35, 0.65);
+    drawColorTriangle(C, mTip, sTip, (baseHue + 210) % 360, baseSat, baseLit, 0.35, 0.65);
+
+    // Layer 4: Primary time triangle
+    drawColorTriangle(hTip, mTip, sTip, baseHue, 100, baseLit * 1.1, 0.75, 1.0);
+
+    ctx.restore();
+
+    // Tips
+    drawGlowCircle(hTip, 4, colH, size * 0.06);
+    drawGlowCircle(mTip, 3.5, colM, size * 0.05);
+    drawGlowCircle(sTip, 3, colS, size * 0.05);
+
+    drawCircle(A, 2.5, colH, 0.5);
+    drawCircle(B, 2.5, colM, 0.5);
+    drawCircle(C, 2.5, colS, 0.5);
+
+    // Digital time
+    drawText(
+      `${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}`,
+      cx,
+      cy + size * 0.28,
+      `700 ${Math.max(14, size * 0.06)}px Georgia, 'Times New Roman', serif`,
+      '#e0e0e8',
+      0.13
+    );
+
+    requestAnimationFrame(frame);
+  }
+
+  frame();
+})();
+</script>
+</body>
+</html>
+```
