@@ -74,7 +74,7 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
       Object.freeze({ visible: false, hueOffset: 60, lightnessMultiplier: 0.95, fillAlpha: 0.3, borderAlpha: 0.55 }),
     ]),
     wedgeLayers: Object.freeze([
-      Object.freeze({ visible: false, hueOffset: 90, lightnessMultiplier: 1.0, fillAlpha: 0.35, borderAlpha: 0.65 }),
+      Object.freeze({ visible: true, hueOffset: 90, lightnessMultiplier: 1.0, fillAlpha: 0.35, borderAlpha: 0.65 }),
     ]),
     primaryLayer: Object.freeze({
       visible: true,
