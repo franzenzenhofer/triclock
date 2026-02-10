@@ -1,6 +1,7 @@
 import type { Point, GradientStop } from '../types/index.js';
 import { appendAlphaHex } from '../color/append-alpha-hex.js';
 import { drawCircle } from './draw-circle.js';
+import { MATH_TAU } from '../constants.js';
 
 export function drawGlowCircle(
   ctx: CanvasRenderingContext2D,
@@ -11,6 +12,7 @@ export function drawGlowCircle(
   stops: readonly GradientStop[],
   innerRadiusRatio: number,
   innerAlpha: number,
+  innerColor: string,
 ): void {
   ctx.save();
   const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
@@ -19,10 +21,10 @@ export function drawGlowCircle(
   }
   ctx.fillStyle = grad;
   ctx.beginPath();
-  ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+  ctx.arc(p.x, p.y, glowR, 0, MATH_TAU);
   ctx.fill();
   ctx.restore();
 
   drawCircle(ctx, p, r, color, 1);
-  drawCircle(ctx, p, r * innerRadiusRatio, '#ffffff', innerAlpha);
+  drawCircle(ctx, p, r * innerRadiusRatio, innerColor, innerAlpha);
 }

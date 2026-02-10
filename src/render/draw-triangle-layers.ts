@@ -1,6 +1,7 @@
-import type { Point, TriangleVertices, TrichronoConfig } from '../types/index.js';
+import type { Point, TriangleVertices, TrichronoConfig, TriangleLayerDef } from '../types/index.js';
 import type { BaseHsl } from '../color/compute-base-hsl.js';
 import { drawColorTriangle } from './draw-color-triangle.js';
+import { HUE_FULL_CIRCLE } from '../constants.js';
 
 interface TipPoints {
   readonly hTip: Point;
@@ -12,18 +13,34 @@ function drawLayer(
   ctx: CanvasRenderingContext2D,
   p1: Point, p2: Point, p3: Point,
   hueOffset: number,
-  litMul: number,
-  fillAlpha: number,
-  borderAlpha: number,
+  layer: TriangleLayerDef,
   base: BaseHsl,
   config: TrichronoConfig,
 ): void {
   drawColorTriangle(
     ctx, p1, p2, p3,
-    (base.h + hueOffset) % 360, base.s, base.l * litMul,
-    fillAlpha, borderAlpha,
+    (base.h + hueOffset) % HUE_FULL_CIRCLE, base.s, base.l * layer.lightnessMultiplier,
+    layer.fillAlpha, layer.borderAlpha,
     config.triangles.glowPasses, config.hsl,
   );
+}
+
+function drawLayerGroup(
+  ctx: CanvasRenderingContext2D,
+  layers: readonly TriangleLayerDef[],
+  trios: readonly [Point, Point, Point][],
+  hueStep: number,
+  base: BaseHsl,
+  config: TrichronoConfig,
+): void {
+  for (const layer of layers) {
+    if (!layer.visible) continue;
+    for (let i = 0; i < trios.length; i++) {
+      const trio = trios[i];
+      if (!trio) continue;
+      drawLayer(ctx, trio[0], trio[1], trio[2], layer.hueOffset + hueStep * i, layer, base, config);
+    }
+  }
 }
 
 export function drawTriangleLayers(
@@ -34,35 +51,38 @@ export function drawTriangleLayers(
   config: TrichronoConfig,
 ): void {
   const tc = config.triangles;
+  const step = tc.hueStep;
 
   ctx.save();
   ctx.globalCompositeOperation = tc.compositeOp;
 
-  for (const layer of tc.sectorLayers) {
-    drawLayer(ctx, verts.A, verts.B, tips.hTip, layer.hueOffset + 0, layer.lightnessMultiplier, layer.fillAlpha, layer.borderAlpha, base, config);
-    drawLayer(ctx, verts.B, verts.C, tips.mTip, layer.hueOffset + 60, layer.lightnessMultiplier, layer.fillAlpha, layer.borderAlpha, base, config);
-    drawLayer(ctx, verts.C, verts.A, tips.sTip, layer.hueOffset + 120, layer.lightnessMultiplier, layer.fillAlpha, layer.borderAlpha, base, config);
-  }
+  drawLayerGroup(ctx, tc.sectorLayers, [
+    [verts.A, verts.B, tips.hTip],
+    [verts.B, verts.C, tips.mTip],
+    [verts.C, verts.A, tips.sTip],
+  ], step, base, config);
 
-  for (const layer of tc.crossLayers) {
-    drawLayer(ctx, verts.A, tips.mTip, tips.sTip, layer.hueOffset + 0, layer.lightnessMultiplier, layer.fillAlpha, layer.borderAlpha, base, config);
-    drawLayer(ctx, verts.B, tips.hTip, tips.sTip, layer.hueOffset + 60, layer.lightnessMultiplier, layer.fillAlpha, layer.borderAlpha, base, config);
-    drawLayer(ctx, verts.C, tips.hTip, tips.mTip, layer.hueOffset + 120, layer.lightnessMultiplier, layer.fillAlpha, layer.borderAlpha, base, config);
-  }
+  drawLayerGroup(ctx, tc.crossLayers, [
+    [verts.A, tips.mTip, tips.sTip],
+    [verts.B, tips.hTip, tips.sTip],
+    [verts.C, tips.hTip, tips.mTip],
+  ], step, base, config);
 
-  for (const layer of tc.wedgeLayers) {
-    drawLayer(ctx, verts.A, tips.hTip, tips.sTip, layer.hueOffset + 0, layer.lightnessMultiplier, layer.fillAlpha, layer.borderAlpha, base, config);
-    drawLayer(ctx, verts.B, tips.hTip, tips.mTip, layer.hueOffset + 60, layer.lightnessMultiplier, layer.fillAlpha, layer.borderAlpha, base, config);
-    drawLayer(ctx, verts.C, tips.mTip, tips.sTip, layer.hueOffset + 120, layer.lightnessMultiplier, layer.fillAlpha, layer.borderAlpha, base, config);
-  }
+  drawLayerGroup(ctx, tc.wedgeLayers, [
+    [verts.A, tips.hTip, tips.sTip],
+    [verts.B, tips.hTip, tips.mTip],
+    [verts.C, tips.mTip, tips.sTip],
+  ], step, base, config);
 
   const pl = tc.primaryLayer;
-  drawColorTriangle(
-    ctx, tips.hTip, tips.mTip, tips.sTip,
-    base.h, 100, base.l * pl.lightnessMultiplier,
-    pl.fillAlpha, pl.borderAlpha,
-    tc.glowPasses, config.hsl,
-  );
+  if (pl.visible) {
+    drawColorTriangle(
+      ctx, tips.hTip, tips.mTip, tips.sTip,
+      base.h, config.hsl.brightSat, base.l * pl.lightnessMultiplier,
+      pl.fillAlpha, pl.borderAlpha,
+      tc.glowPasses, config.hsl,
+    );
+  }
 
   ctx.restore();
 }

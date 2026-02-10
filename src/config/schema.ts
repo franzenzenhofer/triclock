@@ -14,7 +14,7 @@ export function validateConfig(input: unknown): input is PartialConfig {
   if (!isRecord(input)) return false;
 
   const validTopKeys = new Set([
-    'colors', 'geometry', 'hsl', 'scales', 'edgeProgress',
+    'colors', 'geometry', 'frameLines', 'hsl', 'scales', 'edgeProgress',
     'triangles', 'tips', 'digitalTime', 'background', 'edgeMapping',
   ]);
 

@@ -7,8 +7,13 @@ const EDGE_ENDPOINTS = {
   CA: ['C', 'A'] as const,
 };
 
-const DIVISORS: Record<string, number> = { hours: 24, minutes: 60, seconds: 60 };
 const FRAC_KEYS: Record<string, keyof FractionalTime> = { hours: 'h', minutes: 'm', seconds: 's' };
+
+function getDivisor(metric: string, config: TrichronoConfig): number {
+  if (metric === 'hours') return config.scales.hoursDivisions;
+  if (metric === 'minutes') return config.scales.minutesDivisions;
+  return config.scales.secondsDivisions;
+}
 
 function getColor(metric: string, config: TrichronoConfig): string {
   if (metric === 'hours') return config.colors.hours;
@@ -34,7 +39,7 @@ export function drawAllEdges(
   for (const edge of Object.keys(mapping) as (keyof typeof EDGE_ENDPOINTS)[]) {
     const metric = mapping[edge as keyof typeof mapping];
     const [fromKey, toKey] = EDGE_ENDPOINTS[edge];
-    const divisor = DIVISORS[metric] ?? 60;
+    const divisor = getDivisor(metric, config);
     const fracKey = FRAC_KEYS[metric] ?? 's';
     const progress = fracs[fracKey] / divisor;
 

@@ -17,6 +17,7 @@ export function drawScale(
 ): void {
   const n = normalVector(from, to);
   const sc = config.scales;
+  const offset = sc.tickNormalOffset;
 
   for (let i = 0; i <= count; i++) {
     const t = i / count;
@@ -25,8 +26,8 @@ export function drawScale(
     const isActive = i <= activeCount;
 
     const tickLen = isMajor ? size * sc.majorTickRatio : size * sc.minorTickRatio;
-    const inner = { x: p.x + n.x * 2, y: p.y + n.y * 2 };
-    const outer = { x: p.x + n.x * (2 + tickLen), y: p.y + n.y * (2 + tickLen) };
+    const inner = { x: p.x + n.x * offset, y: p.y + n.y * offset };
+    const outer = { x: p.x + n.x * (offset + tickLen), y: p.y + n.y * (offset + tickLen) };
 
     drawLine(
       ctx, inner, outer,
@@ -40,10 +41,10 @@ export function drawScale(
         x: p.x + n.x * (tickLen + sc.labelOffsetPx),
         y: p.y + n.y * (tickLen + sc.labelOffsetPx),
       };
-      const fontSize = Math.max(10, size * sc.labelSizeRatio);
+      const fontSize = Math.max(sc.labelSizeMin, size * sc.labelSizeRatio);
       drawText(
         ctx, String(i), lp.x, lp.y,
-        String(fontSize) + "px 'Helvetica Neue', Arial, sans-serif",
+        String(fontSize) + 'px ' + sc.labelFontFamily,
         isActive ? color : config.colors.inactive,
         isActive ? sc.labelActiveAlpha : sc.labelInactiveAlpha,
       );

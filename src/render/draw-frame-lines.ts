@@ -7,7 +7,8 @@ export function drawFrameLines(
   config: TrichronoConfig,
 ): void {
   const color = config.colors.frame;
-  drawLine(ctx, verts.A, verts.B, color, 1.5, 0.25);
-  drawLine(ctx, verts.B, verts.C, color, 1.5, 0.25);
-  drawLine(ctx, verts.C, verts.A, color, 1.5, 0.25);
+  const { width, alpha } = config.frameLines;
+  drawLine(ctx, verts.A, verts.B, color, width, alpha);
+  drawLine(ctx, verts.B, verts.C, color, width, alpha);
+  drawLine(ctx, verts.C, verts.A, color, width, alpha);
 }

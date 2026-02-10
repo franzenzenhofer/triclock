@@ -21,6 +21,11 @@ export interface GeometryConfig {
   readonly halfBase: number;
 }
 
+export interface FrameLinesConfig {
+  readonly width: number;
+  readonly alpha: number;
+}
+
 export interface HslConfig {
   readonly satBase: number;
   readonly satRange: number;
@@ -42,6 +47,9 @@ export interface ScalesConfig {
   readonly labelSizeRatio: number;
   readonly labelActiveAlpha: number;
   readonly labelInactiveAlpha: number;
+  readonly labelSizeMin: number;
+  readonly labelFontFamily: string;
+  readonly tickNormalOffset: number;
   readonly hoursDivisions: number;
   readonly minutesDivisions: number;
   readonly secondsDivisions: number;
@@ -70,6 +78,7 @@ export interface TrianglesConfig {
   readonly primaryLayer: TriangleLayerDef;
   readonly glowPasses: readonly GlowPass[];
   readonly compositeOp: GlobalCompositeOperation;
+  readonly hueStep: number;
 }
 
 export interface TipsConfig {
@@ -80,6 +89,7 @@ export interface TipsConfig {
   readonly vertexAlpha: number;
   readonly innerRadiusRatio: number;
   readonly innerAlpha: number;
+  readonly innerColor: string;
   readonly gradientStops: readonly GradientStop[];
 }
 
@@ -100,6 +110,7 @@ export interface BackgroundConfig {
 export interface TrichronoConfig {
   readonly colors: ColorsConfig;
   readonly geometry: GeometryConfig;
+  readonly frameLines: FrameLinesConfig;
   readonly hsl: HslConfig;
   readonly scales: ScalesConfig;
   readonly edgeProgress: EdgeProgressConfig;

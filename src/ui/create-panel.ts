@@ -1,14 +1,16 @@
 import { Pane } from 'tweakpane';
 import type { TrichronoConfig } from '../types/index.js';
-import { DEFAULT_CONFIG } from '../config/defaults.js';
+import { STORAGE_KEY, EXPORT_FILENAME } from '../constants.js';
 import { bindColors } from './bind-colors.js';
 import { bindGeometry } from './bind-geometry.js';
+import { bindFrameLines } from './bind-frame-lines.js';
 import { bindHsl } from './bind-hsl.js';
 import { bindScales } from './bind-scales.js';
 import { bindTriangles } from './bind-triangles.js';
 import { bindGlow } from './bind-glow.js';
 import { bindDigitalTime } from './bind-digital-time.js';
 import { bindEdgeMapping } from './bind-edge-mapping.js';
+import { bindTips } from './bind-tips.js';
 
 export function createPanel(
   config: TrichronoConfig,
@@ -31,16 +33,17 @@ export function createPanel(
   bindDigitalTime(visual.addFolder({ title: 'Digital Time' }), config, onChange);
 
   bindGeometry(geometry.addFolder({ title: 'Triangle Shape' }), config, onChange);
+  bindFrameLines(geometry.addFolder({ title: 'Frame Lines' }), config, onChange);
   bindEdgeMapping(geometry.addFolder({ title: 'Edge Mapping' }), config, onChange);
   bindScales(geometry.addFolder({ title: 'Scale Ticks' }), config, onChange);
 
   bindGlow(glowLayers.addFolder({ title: 'Edge Progress' }), config, onChange);
   bindTriangles(glowLayers.addFolder({ title: 'Triangle Layers' }), config, onChange);
+  bindTips(glowLayers.addFolder({ title: 'Tips' }), config, onChange);
 
   pane.addButton({ title: 'Reset to Defaults' }).on('click', () => {
-    Object.assign(config, JSON.parse(JSON.stringify(DEFAULT_CONFIG)));
-    pane.refresh();
-    onChange();
+    localStorage.removeItem(STORAGE_KEY);
+    window.location.reload();
   });
 
   pane.addButton({ title: 'Export JSON' }).on('click', () => {
@@ -48,7 +51,7 @@ export function createPanel(
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'trichrono-config.json';
+    a.download = EXPORT_FILENAME;
     a.click();
     URL.revokeObjectURL(url);
   });

@@ -24,7 +24,7 @@ export function drawTips(
     drawGlowCircle(
       ctx, point, tipCfg.radius, color,
       size * tipCfg.glowRadiusRatio,
-      tc.gradientStops, tc.innerRadiusRatio, tc.innerAlpha,
+      tc.gradientStops, tc.innerRadiusRatio, tc.innerAlpha, tc.innerColor,
     );
   }
 }

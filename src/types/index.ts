@@ -10,6 +10,7 @@ export type { CanvasState } from './canvas-state.js';
 export type {
   ColorsConfig,
   GeometryConfig,
+  FrameLinesConfig,
   HslConfig,
   ScalesConfig,
   EdgeGradientPass,

@@ -16,6 +16,10 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
     botY: 0.58,
     halfBase: 0.95,
   }),
+  frameLines: Object.freeze({
+    width: 1.5,
+    alpha: 0.25,
+  }),
   hsl: Object.freeze({
     satBase: 90,
     satRange: 10,
@@ -36,6 +40,9 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
     labelSizeRatio: 0.04,
     labelActiveAlpha: 0.7,
     labelInactiveAlpha: 0.25,
+    labelSizeMin: 10,
+    labelFontFamily: "'Helvetica Neue', Arial, sans-serif",
+    tickNormalOffset: 2,
     hoursDivisions: 24,
     minutesDivisions: 60,
     secondsDivisions: 60,
@@ -70,15 +77,16 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
   }),
   triangles: Object.freeze({
     sectorLayers: Object.freeze([
-      Object.freeze({ hueOffset: 180, lightnessMultiplier: 0.85, fillAlpha: 0.2, borderAlpha: 0.45 }),
+      Object.freeze({ visible: true, hueOffset: 180, lightnessMultiplier: 0.85, fillAlpha: 0.2, borderAlpha: 0.45 }),
     ]),
     crossLayers: Object.freeze([
-      Object.freeze({ hueOffset: 60, lightnessMultiplier: 0.95, fillAlpha: 0.3, borderAlpha: 0.55 }),
+      Object.freeze({ visible: true, hueOffset: 60, lightnessMultiplier: 0.95, fillAlpha: 0.3, borderAlpha: 0.55 }),
     ]),
     wedgeLayers: Object.freeze([
-      Object.freeze({ hueOffset: 90, lightnessMultiplier: 1.0, fillAlpha: 0.35, borderAlpha: 0.65 }),
+      Object.freeze({ visible: true, hueOffset: 90, lightnessMultiplier: 1.0, fillAlpha: 0.35, borderAlpha: 0.65 }),
     ]),
     primaryLayer: Object.freeze({
+      visible: true,
       hueOffset: 0,
       lightnessMultiplier: 1.1,
       fillAlpha: 0.75,
@@ -92,6 +100,7 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
       Object.freeze({ width: 1.5, alphaMultiplier: 1.00 }),
     ]),
     compositeOp: 'screen' as GlobalCompositeOperation,
+    hueStep: 60,
   }),
   tips: Object.freeze({
     hours: Object.freeze({ radius: 4, glowRadiusRatio: 0.06 }),
@@ -101,6 +110,7 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
     vertexAlpha: 0.5,
     innerRadiusRatio: 0.45,
     innerAlpha: 0.8,
+    innerColor: '#ffffff',
     gradientStops: Object.freeze([
       Object.freeze({ position: 0, alphaHex: 'ff' }),
       Object.freeze({ position: 0.2, alphaHex: 'aa' }),

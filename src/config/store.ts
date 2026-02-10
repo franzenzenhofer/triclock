@@ -1,8 +1,7 @@
 import type { TrichronoConfig } from '../types/index.js';
 import { validateConfig } from './schema.js';
 import type { PartialConfig } from './schema.js';
-
-const STORAGE_KEY = 'trichrono-config';
+import { STORAGE_KEY } from '../constants.js';
 
 export function loadConfig(): PartialConfig | null {
   try {

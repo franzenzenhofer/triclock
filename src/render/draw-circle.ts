@@ -1,4 +1,5 @@
 import type { Point } from '../types/index.js';
+import { MATH_TAU } from '../constants.js';
 
 export function drawCircle(
   ctx: CanvasRenderingContext2D,
@@ -11,7 +12,7 @@ export function drawCircle(
   ctx.globalAlpha = alpha;
   ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+  ctx.arc(p.x, p.y, r, 0, MATH_TAU);
   ctx.fill();
   ctx.restore();
 }
