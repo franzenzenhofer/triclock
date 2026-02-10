@@ -77,6 +77,8 @@ export interface TrianglesConfig {
   readonly wedgeLayers: readonly TriangleLayerDef[];
   readonly primaryLayer: TriangleLayerDef;
   readonly glowPasses: readonly GlowPass[];
+  readonly shadowBlur: number;
+  readonly shadowAlpha: number;
   readonly compositeOp: GlobalCompositeOperation;
   readonly hueStep: number;
 }

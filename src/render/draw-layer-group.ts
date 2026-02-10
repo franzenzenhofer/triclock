@@ -22,6 +22,7 @@ export function drawLayerGroup(
         hue, base.s, base.l * layer.lightnessMultiplier,
         layer.fillAlpha, layer.borderAlpha,
         config.triangles.glowPasses, config.hsl,
+        0, 0,
       );
     }
   }

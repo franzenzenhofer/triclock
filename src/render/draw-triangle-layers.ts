@@ -47,6 +47,7 @@ export function drawTriangleLayers(
       base.h, config.hsl.brightSat, base.l * pl.lightnessMultiplier,
       pl.fillAlpha, pl.borderAlpha,
       tc.glowPasses, config.hsl,
+      tc.shadowBlur, tc.shadowAlpha,
     );
   }
 

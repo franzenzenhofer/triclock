@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>TRICHRONO — Analog 24H Triangle Clock</title>
+  <title>TRICHRONO — show.franzai.com version (SAVED FOR ANALYSIS)</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -291,7 +291,7 @@
       const hn = -(B.y - A.y) / dist(A, B);
       const hny = (B.x - A.x) / dist(A, B);
       drawText(
-        'HOURS \u2192 LUM',
+        'HOURS → LUM',
         hMid.x + hn * lo,
         hMid.y + hny * lo,
         `300 ${Math.max(10, size * 0.038)}px 'Helvetica Neue', Arial, sans-serif`,
@@ -301,7 +301,7 @@
 
       const mMid = lerp(B, C, 0.5);
       drawText(
-        'MINUTES \u2192 SAT',
+        'MINUTES → SAT',
         mMid.x,
         mMid.y + lo * 0.7,
         `300 ${Math.max(10, size * 0.038)}px 'Helvetica Neue', Arial, sans-serif`,
@@ -313,7 +313,7 @@
       const sn = -(A.y - C.y) / dist(C, A);
       const sny = (A.x - C.x) / dist(C, A);
       drawText(
-        'SECONDS \u2192 HUE',
+        'SECONDS → HUE',
         sMid.x + sn * lo,
         sMid.y + sny * lo,
         `300 ${Math.max(10, size * 0.038)}px 'Helvetica Neue', Arial, sans-serif`,
