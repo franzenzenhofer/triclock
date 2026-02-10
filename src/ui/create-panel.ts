@@ -18,11 +18,13 @@ export function createPanel(
 ): Pane {
   const pane = new Pane({ title: 'TRICHRONO Config' });
   pane.element.style.display = 'none';
+  pane.element.style.maxHeight = '90vh';
+  pane.element.style.overflowY = 'auto';
 
   const tabPages = pane.addTab({ pages: [
     { title: 'Visual' },
-    { title: 'Geometry' },
-    { title: 'Glow & Layers' },
+    { title: 'Shape' },
+    { title: 'Effects' },
   ] });
 
   const [visual, geometry, glowLayers] = tabPages.pages;

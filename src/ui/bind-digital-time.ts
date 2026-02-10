@@ -10,20 +10,20 @@ export function bindDigitalTime(
   const dt: Record<string, unknown> = { ...config.digitalTime };
   const mut = asMutable(config);
 
-  folder.addBinding(dt, 'visible').on('change', (ev) => {
-    mut.digitalTime.visible = ev.value as boolean;
-    onChange();
-  });
-  folder.addBinding(dt, 'alpha', { min: 0, max: 1, step: 0.01 }).on('change', (ev) => {
-    mut.digitalTime.alpha = ev.value as number;
-    onChange();
-  });
-  folder.addBinding(dt, 'yOffsetRatio', { min: -1, max: 1, step: 0.01 }).on('change', (ev) => {
-    mut.digitalTime.yOffsetRatio = ev.value as number;
-    onChange();
-  });
-  folder.addBinding(dt, 'fontSizeRatio', { min: 0.02, max: 0.2, step: 0.005 }).on('change', (ev) => {
-    mut.digitalTime.fontSizeRatio = ev.value as number;
-    onChange();
-  });
+  const bind = (key: string, opts?: Record<string, unknown>): void => {
+    folder.addBinding(dt, key, opts).on('change', (ev) => {
+      (mut.digitalTime as Record<string, unknown>)[key] = ev.value;
+      onChange();
+    });
+  };
+
+  bind('visible');
+  bind('showSeconds');
+  bind('color');
+  bind('alpha', { min: 0, max: 1, step: 0.01 });
+  bind('xOffsetRatio', { min: -1, max: 1, step: 0.01 });
+  bind('yOffsetRatio', { min: -1, max: 2, step: 0.01 });
+  bind('fontSizeRatio', { min: 0.02, max: 0.3, step: 0.005 });
+  bind('shadowBlur', { min: 0, max: 40, step: 1 });
+  bind('shadowColor');
 }

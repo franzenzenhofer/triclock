@@ -94,6 +94,7 @@ export interface TipsConfig {
 }
 
 export interface DigitalTimeConfig {
+  readonly xOffsetRatio: number;
   readonly yOffsetRatio: number;
   readonly fontSizeRatio: number;
   readonly fontSizeMin: number;
@@ -101,6 +102,10 @@ export interface DigitalTimeConfig {
   readonly fontWeight: number;
   readonly alpha: number;
   readonly visible: boolean;
+  readonly showSeconds: boolean;
+  readonly color: string;
+  readonly shadowBlur: number;
+  readonly shadowColor: string;
 }
 
 export interface BackgroundConfig {
