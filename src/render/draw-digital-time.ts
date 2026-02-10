@@ -27,9 +27,5 @@ export function drawDigitalTime(
   ctx.shadowColor = dt.shadowColor;
   ctx.shadowBlur = dt.shadowBlur;
   ctx.fillText(text, x, y);
-
-  const shareY = y + fontSize;
-  ctx.shadowBlur = 0;
-  ctx.fillText('Share your time.', x, shareY);
   ctx.restore();
 }

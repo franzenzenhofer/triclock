@@ -55,39 +55,32 @@ async function shareImage(
   }
 }
 
-function positionHitArea(el: HTMLElement, config: TrichronoConfig): void {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const dt = config.digitalTime;
-  const size = Math.min(w, h) * config.geometry.sizeRatio;
-  const fontSize = Math.max(dt.fontSizeMin, size * dt.fontSizeRatio);
-  const clockY = h / 2 + size * dt.yOffsetRatio;
-  const shareY = clockY + fontSize;
-
-  el.style.left = String(w / 2) + 'px';
-  el.style.top = String(shareY - fontSize / 2) + 'px';
-  el.style.width = String(fontSize * 12) + 'px';
-  el.style.height = String(Math.max(44, fontSize * 1.5)) + 'px';
-}
-
 export function createShareLink(
   canvas: HTMLCanvasElement,
   config: TrichronoConfig,
 ): HTMLElement {
-  const hitArea = document.createElement('div');
-  hitArea.style.cssText = [
+  const dt = config.digitalTime;
+  const link = document.createElement('div');
+  link.textContent = 'Share your time.';
+  link.style.cssText = [
     'position:fixed',
+    'bottom:12px',
+    'left:50%',
     'transform:translateX(-50%)',
     'cursor:pointer',
+    'font-family:' + dt.fontFamily,
+    'font-weight:' + String(dt.fontWeight),
+    'font-size:14px',
+    'color:' + dt.color,
+    'opacity:0.35',
     'z-index:100',
+    'user-select:none',
+    'text-decoration:underline',
   ].join(';');
 
-  positionHitArea(hitArea, config);
-  window.addEventListener('resize', () => { positionHitArea(hitArea, config); }, { passive: true });
-
-  hitArea.addEventListener('click', () => {
+  link.addEventListener('click', () => {
     void shareImage(canvas, config);
   });
-  document.body.appendChild(hitArea);
-  return hitArea;
+  document.body.appendChild(link);
+  return link;
 }

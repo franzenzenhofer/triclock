@@ -34,19 +34,15 @@ export function createConfigToggleLink(
   link.appendChild(svg);
   link.style.cssText = [
     'position:fixed',
-    'bottom:10px',
-    'right:14px',
+    'bottom:4px',
+    'right:4px',
     'cursor:pointer',
     'color:' + dt.color,
     'opacity:' + String(Math.min(dt.alpha * 1.2, 0.2)),
     'z-index:100',
     'user-select:none',
     'line-height:0',
-    'min-width:44px',
-    'min-height:44px',
-    'display:flex',
-    'align-items:center',
-    'justify-content:center',
+    'padding:8px',
   ].join(';');
 
   link.addEventListener('click', () => { togglePanel(pane); });
