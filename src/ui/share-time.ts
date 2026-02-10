@@ -2,7 +2,6 @@ import type { TrichronoConfig } from '../types/index.js';
 import { getCurrentTime } from '../time/get-current-time.js';
 import { formatDigital } from '../time/format-digital.js';
 import { configToHash } from '../config/hash.js';
-import { computeOverlayLayout } from './compute-overlay-layout.js';
 
 function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
@@ -56,45 +55,39 @@ async function shareImage(
   }
 }
 
-const SHARE_OPACITY = 0.35;
+function positionHitArea(el: HTMLElement, config: TrichronoConfig): void {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const dt = config.digitalTime;
+  const size = Math.min(w, h) * config.geometry.sizeRatio;
+  const fontSize = Math.max(dt.fontSizeMin, size * dt.fontSizeRatio);
+  const clockY = h / 2 + size * dt.yOffsetRatio;
+  const shareY = clockY + fontSize;
 
-function updateLayout(link: HTMLElement, config: TrichronoConfig): void {
-  const layout = computeOverlayLayout(window.innerWidth, window.innerHeight, config);
-  link.style.top = String(layout.shareLinkY) + 'px';
-  link.style.left = String(layout.shareLinkX) + 'px';
-  link.style.fontSize = String(layout.shareFontSize) + 'px';
+  el.style.left = String(w / 2) + 'px';
+  el.style.top = String(shareY - fontSize / 2) + 'px';
+  el.style.width = String(fontSize * 12) + 'px';
+  el.style.height = String(Math.max(44, fontSize * 1.5)) + 'px';
 }
 
 export function createShareLink(
   canvas: HTMLCanvasElement,
   config: TrichronoConfig,
 ): HTMLElement {
-  const dt = config.digitalTime;
-  const link = document.createElement('div');
-  link.textContent = 'Share your time.';
-  link.style.cssText = [
+  const hitArea = document.createElement('div');
+  hitArea.style.cssText = [
     'position:fixed',
     'transform:translateX(-50%)',
     'cursor:pointer',
-    'font-family:' + dt.fontFamily,
-    'font-weight:' + String(dt.fontWeight),
-    'color:' + dt.color,
-    'opacity:' + String(SHARE_OPACITY),
     'z-index:100',
-    'user-select:none',
-    'text-decoration:underline',
-    'min-height:44px',
-    'display:flex',
-    'align-items:center',
-    'white-space:nowrap',
   ].join(';');
 
-  updateLayout(link, config);
-  window.addEventListener('resize', () => { updateLayout(link, config); }, { passive: true });
+  positionHitArea(hitArea, config);
+  window.addEventListener('resize', () => { positionHitArea(hitArea, config); }, { passive: true });
 
-  link.addEventListener('click', () => {
+  hitArea.addEventListener('click', () => {
     void shareImage(canvas, config);
   });
-  document.body.appendChild(link);
-  return link;
+  document.body.appendChild(hitArea);
+  return hitArea;
 }
