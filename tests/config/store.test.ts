@@ -24,13 +24,13 @@ describe('loadConfig', () => {
   });
 
   it('returns parsed config when valid', () => {
-    storage.set('trichrono-config', JSON.stringify({ colors: { background: '#000' } }));
+    storage.set('triclock-config', JSON.stringify({ colors: { background: '#000' } }));
     const result = loadConfig();
     expect(result).toEqual({ colors: { background: '#000' } });
   });
 
   it('returns null for invalid JSON', () => {
-    storage.set('trichrono-config', 'not json');
+    storage.set('triclock-config', 'not json');
     expect(loadConfig()).toBeNull();
   });
 });
@@ -38,7 +38,7 @@ describe('loadConfig', () => {
 describe('saveConfig', () => {
   it('stores config as JSON', () => {
     saveConfig(DEFAULT_CONFIG as unknown as Parameters<typeof saveConfig>[0]);
-    const raw = storage.get('trichrono-config');
+    const raw = storage.get('triclock-config');
     expect(raw).toBeTruthy();
     const parsed = JSON.parse(raw!);
     expect(parsed.geometry.sizeRatio).toBe(0.42);

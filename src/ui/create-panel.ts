@@ -16,7 +16,7 @@ export function createPanel(
   config: TrichronoConfig,
   onChange: () => void,
 ): Pane {
-  const pane = new Pane({ title: 'TRICHRONO Config' });
+  const pane = new Pane({ title: 'TRICLOCK v' + __APP_VERSION__ });
   pane.element.style.display = 'none';
   pane.element.style.maxHeight = '90vh';
   pane.element.style.overflowY = 'auto';
