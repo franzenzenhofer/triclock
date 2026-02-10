@@ -77,7 +77,7 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
   }),
   triangles: Object.freeze({
     sectorLayers: Object.freeze([
-      Object.freeze({ visible: true, hueOffset: 180, lightnessMultiplier: 0.85, fillAlpha: 0.2, borderAlpha: 0.45 }),
+      Object.freeze({ visible: false, hueOffset: 180, lightnessMultiplier: 0.85, fillAlpha: 0.2, borderAlpha: 0.45 }),
     ]),
     crossLayers: Object.freeze([
       Object.freeze({ visible: true, hueOffset: 60, lightnessMultiplier: 0.95, fillAlpha: 0.3, borderAlpha: 0.55 }),
