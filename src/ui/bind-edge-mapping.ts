@@ -15,7 +15,7 @@ export function bindEdgeMapping(
 
   for (const edge of edges) {
     folder.addBinding(params, edge, { options: OPTIONS }).on('change', (ev) => {
-      mut.edgeMapping[edge] = ev.value;
+      mut.edgeMapping[edge] = ev.value as typeof config.edgeMapping[typeof edge];
       onChange();
     });
   }

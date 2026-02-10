@@ -11,11 +11,11 @@ export function bindGlow(
   const mut = asMutable(config);
 
   folder.addBinding(ep, 'coreWidth', { min: 0.5, max: 10, step: 0.5 }).on('change', (ev) => {
-    mut.edgeProgress.coreWidth = ev.value;
+    mut.edgeProgress.coreWidth = ev.value as number;
     onChange();
   });
   folder.addBinding(ep, 'coreTailLength', { min: 0, max: 0.2, step: 0.01 }).on('change', (ev) => {
-    mut.edgeProgress.coreTailLength = ev.value;
+    mut.edgeProgress.coreTailLength = ev.value as number;
     onChange();
   });
 }

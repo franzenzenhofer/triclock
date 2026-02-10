@@ -11,19 +11,19 @@ export function bindDigitalTime(
   const mut = asMutable(config);
 
   folder.addBinding(dt, 'visible').on('change', (ev) => {
-    mut.digitalTime.visible = ev.value;
+    mut.digitalTime.visible = ev.value as boolean;
     onChange();
   });
   folder.addBinding(dt, 'alpha', { min: 0, max: 1, step: 0.01 }).on('change', (ev) => {
-    mut.digitalTime.alpha = ev.value;
+    mut.digitalTime.alpha = ev.value as number;
     onChange();
   });
   folder.addBinding(dt, 'yOffsetRatio', { min: -1, max: 1, step: 0.01 }).on('change', (ev) => {
-    mut.digitalTime.yOffsetRatio = ev.value;
+    mut.digitalTime.yOffsetRatio = ev.value as number;
     onChange();
   });
   folder.addBinding(dt, 'fontSizeRatio', { min: 0.02, max: 0.2, step: 0.005 }).on('change', (ev) => {
-    mut.digitalTime.fontSizeRatio = ev.value;
+    mut.digitalTime.fontSizeRatio = ev.value as number;
     onChange();
   });
 }

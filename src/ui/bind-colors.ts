@@ -13,7 +13,7 @@ export function bindColors(
 
   for (const key of keys) {
     folder.addBinding(params, key).on('change', (ev) => {
-      mut.colors[key] = ev.value;
+      mut.colors[key] = ev.value as string;
       onChange();
     });
   }

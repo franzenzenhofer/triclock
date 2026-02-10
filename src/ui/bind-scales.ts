@@ -1,6 +1,10 @@
 import type { FolderApi } from 'tweakpane';
-import type { TrichronoConfig } from '../types/index.js';
+import type { TrichronoConfig, ScalesConfig } from '../types/index.js';
 import { asMutable } from './mutate-config.js';
+
+type NumericScaleKey = {
+  [K in keyof ScalesConfig]: ScalesConfig[K] extends number ? K : never;
+}[keyof ScalesConfig];
 
 export function bindScales(
   folder: FolderApi,
@@ -9,7 +13,7 @@ export function bindScales(
 ): void {
   const params: Record<string, unknown> = { ...config.scales };
   const mut = asMutable(config);
-  const entries: readonly [keyof typeof config.scales, number, number, number][] = [
+  const entries: readonly [NumericScaleKey, number, number, number][] = [
     ['majorTickRatio', 0.01, 0.1, 0.001],
     ['minorTickRatio', 0.005, 0.05, 0.001],
     ['majorWidth', 0.5, 5, 0.5],
@@ -25,7 +29,7 @@ export function bindScales(
 
   for (const [key, min, max, step] of entries) {
     folder.addBinding(params, key, { min, max, step }).on('change', (ev) => {
-      mut.scales[key] = ev.value;
+      mut.scales[key] = ev.value as number;
       onChange();
     });
   }

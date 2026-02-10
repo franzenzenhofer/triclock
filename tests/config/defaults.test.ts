@@ -10,6 +10,7 @@ describe('DEFAULT_CONFIG', () => {
     const keys = Object.keys(DEFAULT_CONFIG);
     expect(keys).toContain('colors');
     expect(keys).toContain('geometry');
+    expect(keys).toContain('frameLines');
     expect(keys).toContain('hsl');
     expect(keys).toContain('scales');
     expect(keys).toContain('edgeProgress');

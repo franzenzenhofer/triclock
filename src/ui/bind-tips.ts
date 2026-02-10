@@ -11,23 +11,23 @@ export function bindTips(
   const mut = asMutable(config);
 
   folder.addBinding(params, 'innerColor').on('change', (ev) => {
-    mut.tips.innerColor = ev.value;
+    mut.tips.innerColor = ev.value as string;
     onChange();
   });
   folder.addBinding(params, 'innerRadiusRatio', { min: 0, max: 1, step: 0.05 }).on('change', (ev) => {
-    mut.tips.innerRadiusRatio = ev.value;
+    mut.tips.innerRadiusRatio = ev.value as number;
     onChange();
   });
   folder.addBinding(params, 'innerAlpha', { min: 0, max: 1, step: 0.05 }).on('change', (ev) => {
-    mut.tips.innerAlpha = ev.value;
+    mut.tips.innerAlpha = ev.value as number;
     onChange();
   });
   folder.addBinding(params, 'vertexRadius', { min: 0, max: 10, step: 0.5 }).on('change', (ev) => {
-    mut.tips.vertexRadius = ev.value;
+    mut.tips.vertexRadius = ev.value as number;
     onChange();
   });
   folder.addBinding(params, 'vertexAlpha', { min: 0, max: 1, step: 0.05 }).on('change', (ev) => {
-    mut.tips.vertexAlpha = ev.value;
+    mut.tips.vertexAlpha = ev.value as number;
     onChange();
   });
 }

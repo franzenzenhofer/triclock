@@ -21,7 +21,7 @@ export function bindHsl(
 
   for (const [key, min, max, step] of entries) {
     folder.addBinding(params, key, { min, max, step }).on('change', (ev) => {
-      mut.hsl[key] = ev.value;
+      mut.hsl[key] = ev.value as number;
       onChange();
     });
   }

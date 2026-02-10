@@ -4,17 +4,20 @@ import { normalVector } from '../math/normal-vector.js';
 import { drawLine } from './draw-line.js';
 import { drawText } from './draw-text.js';
 
-export function drawScale(
-  ctx: CanvasRenderingContext2D,
-  from: Point,
-  to: Point,
-  count: number,
-  color: string,
-  activeCount: number,
-  majorEvery: number,
-  size: number,
-  config: TrichronoConfig,
-): void {
+export interface DrawScaleParams {
+  readonly ctx: CanvasRenderingContext2D;
+  readonly from: Point;
+  readonly to: Point;
+  readonly count: number;
+  readonly color: string;
+  readonly activeCount: number;
+  readonly majorEvery: number;
+  readonly size: number;
+  readonly config: TrichronoConfig;
+}
+
+export function drawScale(params: DrawScaleParams): void {
+  const { ctx, from, to, count, color, activeCount, majorEvery, size, config } = params;
   const n = normalVector(from, to);
   const sc = config.scales;
   const offset = sc.tickNormalOffset;

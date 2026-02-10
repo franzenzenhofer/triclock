@@ -1,5 +1,6 @@
-import type { Point, TriangleVertices, FractionalTime, EdgeMapping } from '../types/index.js';
+import type { Point, TriangleVertices, FractionalTime, EdgeMapping, TrichronoConfig } from '../types/index.js';
 import { computeTip } from './compute-tip.js';
+import { EDGE_ENDPOINTS, FRAC_KEYS, getMetricDivisor } from './edge-helpers.js';
 
 export interface AllTips {
   readonly hTip: Point;
@@ -7,39 +8,22 @@ export interface AllTips {
   readonly sTip: Point;
 }
 
-const EDGE_ENDPOINTS: Record<string, [keyof TriangleVertices, keyof TriangleVertices]> = {
-  AB: ['A', 'B'],
-  BC: ['B', 'C'],
-  CA: ['C', 'A'],
-};
-
-const DIVISORS: Record<string, number> = {
-  hours: 24,
-  minutes: 60,
-  seconds: 60,
-};
-
-const METRIC_KEY: Record<string, keyof FractionalTime> = {
-  hours: 'h',
-  minutes: 'm',
-  seconds: 's',
-};
-
 export function computeAllTips(
   verts: TriangleVertices,
   fractions: FractionalTime,
   mapping: EdgeMapping,
+  config: TrichronoConfig,
 ): AllTips {
   const tips: Record<string, Point> = {};
 
   for (const [edge, metric] of Object.entries(mapping)) {
-    const endpoints = EDGE_ENDPOINTS[edge];
-    if (!endpoints) continue;
+    if (!(edge in EDGE_ENDPOINTS)) continue;
+    const endpoints = EDGE_ENDPOINTS[edge as keyof typeof EDGE_ENDPOINTS];
     const [fromKey, toKey] = endpoints;
-    const fractionalKey = METRIC_KEY[metric];
-    const divisor = DIVISORS[metric];
-    if (!fractionalKey || !divisor) continue;
-    const fraction = fractions[fractionalKey] / divisor;
+    const fracKey = FRAC_KEYS[metric];
+    const divisor = getMetricDivisor(metric, config);
+    if (!fracKey) continue;
+    const fraction = fractions[fracKey] / divisor;
     tips[metric] = computeTip(verts[fromKey], verts[toKey], fraction);
   }
 

@@ -1,25 +1,6 @@
 import type { Point, TriangleVertices, FractionalTime, EdgeMapping, TrichronoConfig } from '../types/index.js';
+import { EDGE_ENDPOINTS, FRAC_KEYS, getMetricColor, getMetricDivisor } from '../geometry/edge-helpers.js';
 import { drawEdgeProgress } from './draw-edge-progress.js';
-
-const EDGE_ENDPOINTS = {
-  AB: ['A', 'B'] as const,
-  BC: ['B', 'C'] as const,
-  CA: ['C', 'A'] as const,
-};
-
-const FRAC_KEYS: Record<string, keyof FractionalTime> = { hours: 'h', minutes: 'm', seconds: 's' };
-
-function getDivisor(metric: string, config: TrichronoConfig): number {
-  if (metric === 'hours') return config.scales.hoursDivisions;
-  if (metric === 'minutes') return config.scales.minutesDivisions;
-  return config.scales.secondsDivisions;
-}
-
-function getColor(metric: string, config: TrichronoConfig): string {
-  if (metric === 'hours') return config.colors.hours;
-  if (metric === 'minutes') return config.colors.minutes;
-  return config.colors.seconds;
-}
 
 export interface EdgeTips {
   readonly hTip: Point;
@@ -39,12 +20,12 @@ export function drawAllEdges(
   for (const edge of Object.keys(mapping) as (keyof typeof EDGE_ENDPOINTS)[]) {
     const metric = mapping[edge as keyof typeof mapping];
     const [fromKey, toKey] = EDGE_ENDPOINTS[edge];
-    const divisor = getDivisor(metric, config);
+    const divisor = getMetricDivisor(metric, config);
     const fracKey = FRAC_KEYS[metric] ?? 's';
     const progress = fracs[fracKey] / divisor;
 
     tips[metric] = drawEdgeProgress(
-      ctx, verts[fromKey], verts[toKey], progress, getColor(metric, config), config,
+      ctx, verts[fromKey], verts[toKey], progress, getMetricColor(metric, config), config,
     );
   }
 
