@@ -30,4 +30,18 @@ export function bindTips(
     mut.tips.vertexAlpha = ev.value as number;
     onChange();
   });
+
+  const tipKeys = ['hours', 'minutes', 'seconds'] as const;
+  for (const key of tipKeys) {
+    const tipParams: Record<string, unknown> = { ...config.tips[key] };
+    const sub = folder.addFolder({ title: key.charAt(0).toUpperCase() + key.slice(1) + ' Tip' });
+    sub.addBinding(tipParams, 'radius', { min: 1, max: 15, step: 0.5 }).on('change', (ev) => {
+      mut.tips[key] = { ...config.tips[key], radius: ev.value as number };
+      onChange();
+    });
+    sub.addBinding(tipParams, 'glowRadiusRatio', { min: 0, max: 0.3, step: 0.01 }).on('change', (ev) => {
+      mut.tips[key] = { ...config.tips[key], glowRadiusRatio: ev.value as number };
+      onChange();
+    });
+  }
 }

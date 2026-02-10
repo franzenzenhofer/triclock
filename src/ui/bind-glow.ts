@@ -14,6 +14,10 @@ export function bindGlow(
     mut.edgeProgress.coreWidth = ev.value as number;
     onChange();
   });
+  folder.addBinding(ep, 'coreAlpha', { min: 0, max: 1, step: 0.05 }).on('change', (ev) => {
+    mut.edgeProgress.coreAlpha = ev.value as number;
+    onChange();
+  });
   folder.addBinding(ep, 'coreTailLength', { min: 0, max: 0.2, step: 0.01 }).on('change', (ev) => {
     mut.edgeProgress.coreTailLength = ev.value as number;
     onChange();

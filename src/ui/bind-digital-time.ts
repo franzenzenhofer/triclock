@@ -24,6 +24,8 @@ export function bindDigitalTime(
   bind('xOffsetRatio', { min: -1, max: 1, step: 0.01 });
   bind('yOffsetRatio', { min: -1, max: 2, step: 0.01 });
   bind('fontSizeRatio', { min: 0.02, max: 0.3, step: 0.005 });
+  bind('fontSizeMin', { min: 8, max: 48, step: 1 });
+  bind('fontWeight', { min: 100, max: 900, step: 100 });
   bind('shadowBlur', { min: 0, max: 40, step: 1 });
   bind('shadowColor');
 }

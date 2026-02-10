@@ -20,11 +20,18 @@ export function bindScales(
     ['minorWidth', 0.5, 3, 0.5],
     ['activeAlpha', 0, 1, 0.05],
     ['inactiveAlpha', 0, 1, 0.05],
+    ['labelOffsetPx', 4, 40, 1],
     ['labelSizeMin', 6, 24, 1],
     ['tickNormalOffset', 0, 10, 0.5],
     ['labelSizeRatio', 0.01, 0.1, 0.005],
     ['labelActiveAlpha', 0, 1, 0.05],
     ['labelInactiveAlpha', 0, 1, 0.05],
+    ['hoursDivisions', 4, 48, 1],
+    ['minutesDivisions', 4, 120, 1],
+    ['secondsDivisions', 4, 120, 1],
+    ['hoursMajorEvery', 1, 24, 1],
+    ['minutesMajorEvery', 1, 30, 1],
+    ['secondsMajorEvery', 1, 30, 1],
   ];
 
   for (const [key, min, max, step] of entries) {

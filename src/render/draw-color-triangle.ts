@@ -1,4 +1,4 @@
-import type { Point } from '../types/index.js';
+import type { Point, TrianglesConfig } from '../types/index.js';
 import { hslToHex } from '../color/hsl-to-hex.js';
 import { brightColor } from '../color/bright-color.js';
 import type { HslConfig } from '../types/config.js';
@@ -15,15 +15,14 @@ export function drawColorTriangle(
   fillAlpha: number,
   borderAlpha: number,
   hslConfig: HslConfig,
-  shadowBlur: number,
-  shadowAlpha: number,
+  tc: TrianglesConfig,
   size: number,
 ): void {
   const main = hslToHex(hue, sat, lit);
   const bright = brightColor(hue, lit, hslConfig);
-  const lighter = hslToHex(hue + 30, sat, lit + 10);
-  const darker = hslToHex(hue - 30, sat, lit - 5);
-  const gradientRadius = size * 0.5;
+  const lighter = hslToHex(hue + tc.lighterHueOffset, sat, lit + tc.lighterLitBoost);
+  const darker = hslToHex(hue - tc.darkerHueOffset, sat, lit - tc.darkerLitReduction);
+  const gradientRadius = size * tc.gradientRadiusRatio;
 
   ctx.save();
   drawTrianglePath(ctx, p1, p2, p3);
@@ -35,29 +34,29 @@ export function drawColorTriangle(
   rLight.addColorStop(0, lighter);
   rLight.addColorStop(1, 'transparent');
   ctx.fillStyle = rLight;
-  ctx.globalAlpha = 0.25;
+  ctx.globalAlpha = tc.lightGradientAlpha;
   ctx.fill();
 
   const rDark = ctx.createRadialGradient(p2.x, p2.y, 0, p2.x, p2.y, gradientRadius);
   rDark.addColorStop(0, darker);
   rDark.addColorStop(1, 'transparent');
   ctx.fillStyle = rDark;
-  ctx.globalAlpha = 0.2;
+  ctx.globalAlpha = tc.darkGradientAlpha;
   ctx.fill();
 
   ctx.strokeStyle = bright;
-  ctx.lineWidth = 2.5;
+  ctx.lineWidth = tc.borderLineWidth;
   ctx.globalAlpha = borderAlpha;
   ctx.stroke();
   ctx.restore();
 
-  if (shadowBlur > 0) {
+  if (tc.shadowBlur > 0) {
     ctx.save();
     ctx.shadowColor = main;
-    ctx.shadowBlur = shadowBlur;
+    ctx.shadowBlur = tc.shadowBlur;
     ctx.strokeStyle = main;
-    ctx.lineWidth = 2;
-    ctx.globalAlpha = shadowAlpha;
+    ctx.lineWidth = tc.shadowLineWidth;
+    ctx.globalAlpha = tc.shadowAlpha;
     drawTrianglePath(ctx, p1, p2, p3);
     ctx.stroke();
     ctx.restore();

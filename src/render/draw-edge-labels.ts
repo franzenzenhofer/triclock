@@ -16,9 +16,12 @@ export function drawEdgeLabels(
   size: number,
   config: TrichronoConfig,
 ): void {
-  const offset = size * 0.12;
-  const fontSize = Math.max(10, size * 0.038);
-  const font = `300 ${String(fontSize)}px 'Helvetica Neue', Arial, sans-serif`;
+  const el = config.edgeLabels;
+  if (!el.visible) return;
+
+  const offset = size * el.offsetRatio;
+  const fontSize = Math.max(el.fontSizeMin, size * el.fontSizeRatio);
+  const font = `${String(el.fontWeight)} ${String(fontSize)}px ${el.fontFamily}`;
 
   for (let i = 0; i < LABELS.length; i++) {
     const entry = LABELS[i];
@@ -32,9 +35,9 @@ export function drawEdgeLabels(
     const color = config.colors[colorKey];
 
     if (i === 1) {
-      drawText(ctx, text, mid.x, mid.y + offset * 0.7, font, color, 0.35);
+      drawText(ctx, text, mid.x, mid.y + offset * 0.7, font, color, el.alpha);
     } else {
-      drawText(ctx, text, mid.x + n.x * offset, mid.y + n.y * offset, font, color, 0.35);
+      drawText(ctx, text, mid.x + n.x * offset, mid.y + n.y * offset, font, color, el.alpha);
     }
   }
 }

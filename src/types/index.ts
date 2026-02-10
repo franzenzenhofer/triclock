@@ -17,6 +17,7 @@ export type {
   EdgeProgressConfig,
   TrianglesConfig,
   TipsConfig,
+  EdgeLabelsConfig,
   DigitalTimeConfig,
   BackgroundConfig,
   TrichronoConfig,

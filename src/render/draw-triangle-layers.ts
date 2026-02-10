@@ -48,7 +48,7 @@ export function drawTriangleLayers(
       base.h, base.s, base.l,
       pl.fillAlpha, pl.borderAlpha,
       config.hsl,
-      tc.shadowBlur, tc.shadowAlpha,
+      tc,
       size,
     );
   }

@@ -81,6 +81,15 @@ export interface TrianglesConfig {
   readonly shadowAlpha: number;
   readonly compositeOp: GlobalCompositeOperation;
   readonly hueStep: number;
+  readonly lighterHueOffset: number;
+  readonly lighterLitBoost: number;
+  readonly darkerHueOffset: number;
+  readonly darkerLitReduction: number;
+  readonly gradientRadiusRatio: number;
+  readonly lightGradientAlpha: number;
+  readonly darkGradientAlpha: number;
+  readonly borderLineWidth: number;
+  readonly shadowLineWidth: number;
 }
 
 export interface TipsConfig {
@@ -93,6 +102,16 @@ export interface TipsConfig {
   readonly innerAlpha: number;
   readonly innerColor: string;
   readonly gradientStops: readonly GradientStop[];
+}
+
+export interface EdgeLabelsConfig {
+  readonly visible: boolean;
+  readonly alpha: number;
+  readonly offsetRatio: number;
+  readonly fontSizeRatio: number;
+  readonly fontSizeMin: number;
+  readonly fontWeight: number;
+  readonly fontFamily: string;
 }
 
 export interface DigitalTimeConfig {
@@ -123,6 +142,7 @@ export interface TrichronoConfig {
   readonly edgeProgress: EdgeProgressConfig;
   readonly triangles: TrianglesConfig;
   readonly tips: TipsConfig;
+  readonly edgeLabels: EdgeLabelsConfig;
   readonly digitalTime: DigitalTimeConfig;
   readonly background: BackgroundConfig;
   readonly edgeMapping: EdgeMapping;

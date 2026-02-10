@@ -1,6 +1,7 @@
 import { Pane } from 'tweakpane';
 import type { TrichronoConfig } from '../types/index.js';
 import { STORAGE_KEY, EXPORT_FILENAME } from '../constants.js';
+import { configToHash } from '../config/hash.js';
 import { bindColors } from './bind-colors.js';
 import { bindGeometry } from './bind-geometry.js';
 import { bindFrameLines } from './bind-frame-lines.js';
@@ -11,6 +12,8 @@ import { bindGlow } from './bind-glow.js';
 import { bindDigitalTime } from './bind-digital-time.js';
 import { bindEdgeMapping } from './bind-edge-mapping.js';
 import { bindTips } from './bind-tips.js';
+import { bindEdgeLabels } from './bind-edge-labels.js';
+import { bindBackground } from './bind-background.js';
 
 export function createPanel(
   config: TrichronoConfig,
@@ -33,6 +36,8 @@ export function createPanel(
   bindColors(visual.addFolder({ title: 'Colors' }), config, onChange);
   bindHsl(visual.addFolder({ title: 'HSL Dynamics' }), config, onChange);
   bindDigitalTime(visual.addFolder({ title: 'Digital Time' }), config, onChange);
+  bindEdgeLabels(visual.addFolder({ title: 'Edge Labels' }), config, onChange);
+  bindBackground(visual.addFolder({ title: 'Background' }), config, onChange);
 
   bindGeometry(geometry.addFolder({ title: 'Triangle Shape' }), config, onChange);
   bindFrameLines(geometry.addFolder({ title: 'Frame Lines' }), config, onChange);
@@ -43,8 +48,15 @@ export function createPanel(
   bindTriangles(glowLayers.addFolder({ title: 'Triangle Layers' }), config, onChange);
   bindTips(glowLayers.addFolder({ title: 'Tips' }), config, onChange);
 
+  pane.addButton({ title: 'Copy Share Link' }).on('click', () => {
+    const hash = configToHash(config);
+    const url = window.location.origin + window.location.pathname + (hash ? '#' + hash : '');
+    void navigator.clipboard.writeText(url);
+  });
+
   pane.addButton({ title: 'Reset to Defaults' }).on('click', () => {
     localStorage.removeItem(STORAGE_KEY);
+    window.history.replaceState(null, '', window.location.pathname);
     window.location.reload();
   });
 

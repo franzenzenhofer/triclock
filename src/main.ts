@@ -1,11 +1,11 @@
 import type { CanvasState, TrichronoConfig } from './types/index.js';
-import { createConfig, loadConfig, saveConfig } from './config/index.js';
+import { createConfig, loadConfig, loadHashConfig, saveConfig, updateHash } from './config/index.js';
 import { setupCanvas, computeLayout, applyLayout } from './canvas/index.js';
 import { createLoop } from './animation/index.js';
 import { createPanel, setupKeybindings } from './ui/index.js';
 
 const { canvas, ctx } = setupCanvas('c');
-const config: TrichronoConfig = createConfig(loadConfig());
+const config: TrichronoConfig = createConfig(loadHashConfig() ?? loadConfig());
 let state: CanvasState = computeLayout(
   window.innerWidth, window.innerHeight,
   window.devicePixelRatio || 1,
@@ -23,6 +23,7 @@ function handleResize(): void {
 
 function handleConfigChange(): void {
   saveConfig(config);
+  updateHash(config);
   handleResize();
 }
 

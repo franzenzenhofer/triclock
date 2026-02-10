@@ -15,7 +15,7 @@ export function validateConfig(input: unknown): input is PartialConfig {
 
   const validTopKeys = new Set([
     'colors', 'geometry', 'frameLines', 'hsl', 'scales', 'edgeProgress',
-    'triangles', 'tips', 'digitalTime', 'background', 'edgeMapping',
+    'triangles', 'tips', 'edgeLabels', 'digitalTime', 'background', 'edgeMapping',
   ]);
 
   for (const key of Object.keys(input)) {

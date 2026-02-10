@@ -12,6 +12,7 @@ export function drawLayerGroup(
   config: TrichronoConfig,
   size: number,
 ): void {
+  const noShadow = { ...config.triangles, shadowBlur: 0, shadowAlpha: 0 };
   for (const layer of layers) {
     if (!layer.visible) continue;
     for (let i = 0; i < trios.length; i++) {
@@ -23,7 +24,7 @@ export function drawLayerGroup(
         hue, base.s, base.l * layer.lightnessMultiplier,
         layer.fillAlpha, layer.borderAlpha,
         config.hsl,
-        0, 0,
+        noShadow,
         size,
       );
     }
