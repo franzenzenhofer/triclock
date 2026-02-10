@@ -42,6 +42,11 @@ export function createConfigToggleLink(
     'z-index:10',
     'user-select:none',
     'line-height:0',
+    'min-width:44px',
+    'min-height:44px',
+    'display:flex',
+    'align-items:center',
+    'justify-content:center',
   ].join(';');
 
   link.addEventListener('click', () => { togglePanel(pane); });

@@ -64,7 +64,8 @@ function updateLayout(link: HTMLElement, config: TrichronoConfig): void {
   const clockFontSize = Math.max(dt.fontSizeMin, size * dt.fontSizeRatio);
   const clockY = cy + size * dt.yOffsetRatio;
   const shareFontSize = Math.max(10, clockFontSize * 0.6);
-  const top = clockY + clockFontSize * 0.6 + shareFontSize * 0.6;
+  const rawTop = clockY + clockFontSize * 0.6 + shareFontSize * 0.6;
+  const top = Math.min(rawTop, h - shareFontSize - 40);
 
   link.style.top = String(top) + 'px';
   link.style.left = String(w / 2) + 'px';

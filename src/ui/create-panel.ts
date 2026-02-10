@@ -15,14 +15,29 @@ import { bindTips } from './bind-tips.js';
 import { bindEdgeLabels } from './bind-edge-labels.js';
 import { bindBackground } from './bind-background.js';
 
+function applyPanelStyles(el: HTMLElement): void {
+  const isMobile = window.innerWidth < 600;
+  el.style.maxHeight = isMobile ? '80vh' : '90vh';
+  el.style.overflowY = 'auto';
+  el.style.setProperty('-webkit-overflow-scrolling', 'touch');
+  if (isMobile) {
+    el.style.position = 'fixed';
+    el.style.top = '0';
+    el.style.left = '0';
+    el.style.right = '0';
+    el.style.width = '100vw';
+    el.style.maxWidth = '100vw';
+    el.style.zIndex = '1000';
+  }
+}
+
 export function createPanel(
   config: TrichronoConfig,
   onChange: () => void,
 ): Pane {
   const pane = new Pane({ title: 'TRICLOCK v' + __APP_VERSION__ });
   pane.element.style.display = 'none';
-  pane.element.style.maxHeight = '90vh';
-  pane.element.style.overflowY = 'auto';
+  applyPanelStyles(pane.element);
 
   const tabPages = pane.addTab({ pages: [
     { title: 'Visual' },
