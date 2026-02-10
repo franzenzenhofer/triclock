@@ -55,37 +55,44 @@ async function shareImage(
   }
 }
 
-function positionBelowClock(link: HTMLElement, config: TrichronoConfig): void {
+function updateLayout(link: HTMLElement, config: TrichronoConfig): void {
   const w = window.innerWidth;
   const h = window.innerHeight;
   const size = Math.min(w, h) * config.geometry.sizeRatio;
   const cy = h / 2;
-  const clockY = cy + size * config.digitalTime.yOffsetRatio;
-  const clockFontSize = Math.max(config.digitalTime.fontSizeMin, size * config.digitalTime.fontSizeRatio);
-  const top = clockY + clockFontSize * 0.8;
+  const dt = config.digitalTime;
+  const clockFontSize = Math.max(dt.fontSizeMin, size * dt.fontSizeRatio);
+  const clockY = cy + size * dt.yOffsetRatio;
+  const shareFontSize = Math.max(10, clockFontSize * 0.6);
+  const top = clockY + clockFontSize * 0.6 + shareFontSize * 0.6;
+
   link.style.top = String(top) + 'px';
   link.style.left = String(w / 2) + 'px';
+  link.style.fontSize = String(shareFontSize) + 'px';
 }
 
 export function createShareLink(
   canvas: HTMLCanvasElement,
   config: TrichronoConfig,
 ): HTMLElement {
+  const dt = config.digitalTime;
   const link = document.createElement('div');
-  link.textContent = 'share your time';
+  link.textContent = 'Share your time.';
   link.style.cssText = [
     'position:fixed',
     'transform:translateX(-50%)',
     'cursor:pointer',
-    'font:400 11px sans-serif',
-    'color:' + config.digitalTime.color,
-    'opacity:' + String(config.digitalTime.alpha),
+    'font-family:' + dt.fontFamily,
+    'font-weight:' + String(dt.fontWeight),
+    'color:' + dt.color,
+    'opacity:' + String(dt.alpha),
     'z-index:10',
     'user-select:none',
+    'text-decoration:underline',
   ].join(';');
 
-  positionBelowClock(link, config);
-  window.addEventListener('resize', () => { positionBelowClock(link, config); }, { passive: true });
+  updateLayout(link, config);
+  window.addEventListener('resize', () => { updateLayout(link, config); }, { passive: true });
 
   link.addEventListener('click', () => {
     void shareImage(canvas, config);
