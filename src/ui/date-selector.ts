@@ -52,6 +52,7 @@ export function createDateSelector(): DateSelector {
   tomorrowBtn.textContent = 'TOMORROW';
   tomorrowBtn.style.cssText = LABEL_STYLE;
 
+  // Wrap button + hidden date input so showPicker() has a rendered element
   const pickWrap = document.createElement('div');
   pickWrap.style.cssText = 'position:relative;display:inline-block';
 
@@ -61,9 +62,14 @@ export function createDateSelector(): DateSelector {
 
   const input = document.createElement('input');
   input.type = 'date';
-  input.style.cssText = 'position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%';
+  input.style.cssText = 'position:absolute;inset:0;opacity:0;pointer-events:none;width:100%;height:100%';
   input.min = new Date().toISOString().slice(0, 10);
   pickWrap.append(pickBtn, input);
+
+  // Button click opens native date picker on both desktop and mobile
+  pickBtn.addEventListener('click', () => {
+    try { input.showPicker(); } catch { input.click(); }
+  });
 
   const buttons = [todayBtn, tomorrowBtn, pickBtn];
 
@@ -77,21 +83,21 @@ export function createDateSelector(): DateSelector {
     });
   }
 
-  function select(k: DateKind): void {
+  function selectKind(k: DateKind): void {
     kind = k;
     if (k !== 'custom') pickBtn.textContent = 'PICK DATE';
     highlight();
   }
 
-  todayBtn.addEventListener('click', () => { select('today'); });
-  tomorrowBtn.addEventListener('click', () => { select('tomorrow'); });
+  todayBtn.addEventListener('click', () => { selectKind('today'); });
+  tomorrowBtn.addEventListener('click', () => { selectKind('tomorrow'); });
 
   input.addEventListener('change', () => {
     if (!input.value) return;
     const parts = input.value.split('-');
     customDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
     pickBtn.textContent = formatDateLabel(customDate);
-    select('custom');
+    selectKind('custom');
   });
 
   buttons.forEach((btn) => {
