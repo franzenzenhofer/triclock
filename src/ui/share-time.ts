@@ -49,7 +49,11 @@ function cropToClockRegion(
   const pad = state.size * CROP_PAD;
   const halfW = state.size * config.geometry.halfBase + pad;
   const top = state.cy - state.size - pad;
-  const bot = state.cy + state.size * config.geometry.botY + pad;
+  const triBot = state.cy + state.size * config.geometry.botY;
+  const digitalBot = config.digitalTime.visible
+    ? state.cy + state.size * config.digitalTime.yOffsetRatio + state.size * config.digitalTime.fontSizeRatio
+    : triBot;
+  const bot = Math.max(triBot, digitalBot) + pad;
   const cropW = halfW * 2;
   const cropH = bot - top;
   const side = Math.max(cropW, cropH);
