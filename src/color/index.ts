@@ -1,4 +1,5 @@
 export { hslToHex } from './hsl-to-hex.js';
+export { hslToRgb01 } from './hsl-to-rgb01.js';
 export { appendAlphaHex } from './append-alpha-hex.js';
 export { computeBaseHsl } from './compute-base-hsl.js';
 export type { BaseHsl } from './compute-base-hsl.js';

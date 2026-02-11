@@ -1,21 +1,10 @@
 import type { Point, TrianglesConfig } from '../types/index.js';
 import { hslToHex } from '../color/hsl-to-hex.js';
+import { hslToRgb01 } from '../color/hsl-to-rgb01.js';
 import { brightColor } from '../color/bright-color.js';
 import type { HslConfig } from '../types/config.js';
 import { drawTrianglePath } from './draw-triangle-path.js';
 import { getPlasmaRenderer } from './plasma-renderer.js';
-
-function hslToRgb01(h: number, s: number, l: number): [number, number, number] {
-  h = ((h % 360) + 360) % 360;
-  const sN = Math.max(0, Math.min(100, s)) / 100;
-  const lN = Math.max(0, Math.min(100, l)) / 100;
-  const a = sN * Math.min(lN, 1 - lN);
-  const f = (n: number): number => {
-    const k = (n + h / 30) % 12;
-    return lN - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-  };
-  return [f(0), f(8), f(4)];
-}
 
 export function drawColorTriangle(
   ctx: CanvasRenderingContext2D,

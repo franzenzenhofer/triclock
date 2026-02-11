@@ -1,4 +1,4 @@
-import type { TrichronoConfig } from '../types/index.js';
+import type { TimeValues, TrichronoConfig } from '../types/index.js';
 import { DEFAULT_CONFIG } from './defaults.js';
 import { validateConfig } from './schema.js';
 import type { PartialConfig } from './schema.js';
@@ -7,6 +7,47 @@ import type { DisplayModeName } from '../ui/display-modes.js';
 
 const MODE_NAMES: ReadonlySet<string> = new Set(['prism', 'pure', 'flux']);
 const EPSILON = 1e-10;
+
+export interface HashParams {
+  readonly time: TimeValues | null;
+  readonly plasma: boolean;
+}
+
+function splitHash(): { primary: string; params: Map<string, string> } {
+  const raw = window.location.hash.slice(1);
+  const parts = raw.split('&');
+  const primary = parts[0] ?? '';
+  const params = new Map<string, string>();
+  for (let i = 1; i < parts.length; i++) {
+    const part = parts[i] as string;
+    const eq = part.indexOf('=');
+    if (eq === -1) {
+      params.set(part.toLowerCase(), '');
+    } else {
+      params.set(part.slice(0, eq).toLowerCase(), part.slice(eq + 1));
+    }
+  }
+  return { primary, params };
+}
+
+function parseTime(val: string): TimeValues | null {
+  const m = /^(\d{1,2}):(\d{2}):(\d{2})$/.exec(val);
+  if (!m) return null;
+  const hours = Number(m[1]);
+  const minutes = Number(m[2]);
+  const seconds = Number(m[3]);
+  if (hours > 23 || minutes > 59 || seconds > 59) return null;
+  return { hours, minutes, seconds, ms: 0 };
+}
+
+export function loadHashParams(): HashParams {
+  const { params } = splitHash();
+  const timeStr = params.get('time');
+  return {
+    time: timeStr ? parseTime(timeStr) : null,
+    plasma: params.get('plasma') !== 'off',
+  };
+}
 
 function valuesEqual(a: unknown, b: unknown): boolean {
   if (typeof a === 'number' && typeof b === 'number') {
@@ -77,16 +118,16 @@ export function configToHash(config: TrichronoConfig): string {
 }
 
 export function loadHashMode(): DisplayModeName | null {
-  const hash = window.location.hash.slice(1);
-  if (MODE_NAMES.has(hash)) return hash as DisplayModeName;
+  const { primary } = splitHash();
+  if (MODE_NAMES.has(primary)) return primary as DisplayModeName;
   return null;
 }
 
 export function loadHashConfig(): PartialConfig | null {
   try {
-    const hash = window.location.hash.slice(1);
-    if (!hash || MODE_NAMES.has(hash)) return null;
-    const json = decodeURIComponent(atob(hash));
+    const { primary } = splitHash();
+    if (!primary || MODE_NAMES.has(primary)) return null;
+    const json = decodeURIComponent(atob(primary));
     const parsed: unknown = JSON.parse(json);
     if (!validateConfig(parsed)) return null;
     return parsed;

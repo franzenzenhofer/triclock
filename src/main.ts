@@ -1,5 +1,6 @@
 import type { CanvasState, TimeValues, TrichronoConfig } from './types/index.js';
-import { createConfig, loadHashConfig, loadHashMode, updateHash } from './config/index.js';
+import { createConfig, loadHashConfig, loadHashMode, loadHashParams, updateHash } from './config/index.js';
+import { asMutable } from './ui/mutate-config.js';
 import { setupCanvas, computeLayout, applyLayout } from './canvas/index.js';
 import type { LayoutInput } from './canvas/index.js';
 import { getCurrentTime } from './time/get-current-time.js';
@@ -11,11 +12,20 @@ import {
   createFullscreenToggle, createMeetTimePicker, createAnyTimeLink,
   shareMeetImage, createInstallButton, startOnboarding,
 } from './ui/index.js';
+import { dumpState } from './debug/dump-state.js';
 
 const { canvas, ctx } = setupCanvas('c');
 const hashMode = loadHashMode();
 const hashOverrides = loadHashConfig();
 const config: TrichronoConfig = createConfig(hashOverrides);
+const hashParams = loadHashParams();
+
+let timeOverride: TimeValues | null = hashParams.time;
+
+if (!hashParams.plasma) {
+  const mut = asMutable(config);
+  mut.triangles.plasma = { ...config.triangles.plasma, enabled: false };
+}
 
 const hasHash = !!hashMode || !!hashOverrides;
 const needsOnboarding = !hasHash;
@@ -98,8 +108,6 @@ window.addEventListener('keydown', (e) => {
   if (e.key.toLowerCase() === TOGGLE_PANEL_KEY) cancelOnboardingIfActive();
 });
 
-// Time override for "Share Any Time" feature
-let timeOverride: TimeValues | null = null;
 const getTime = (): TimeValues => timeOverride ?? getCurrentTime();
 
 // Share links wrapper (horizontal layout)
@@ -151,6 +159,8 @@ if (needsOnboarding) {
   );
   cancelOnboarding = rawCancel;
 }
+
+(window as unknown as Record<string, unknown>).__triclockDebug = (): void => { dumpState(getTime(), config); };
 
 const loop = createLoop(ctx, () => state, () => config, getTime);
 loop.start();
