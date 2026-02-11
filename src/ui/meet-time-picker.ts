@@ -3,6 +3,7 @@ import type { DateSelection } from './date-selector.js';
 import { UI_FONT } from '../constants.js';
 import { createDrumColumn } from './drum-picker.js';
 import { createDateSelector } from './date-selector.js';
+import { formatDigital } from '../time/format-digital.js';
 
 export interface MeetTimePicker {
   readonly element: HTMLElement;
@@ -47,6 +48,7 @@ export function createMeetTimePicker(
   onBack: () => void,
 ): MeetTimePicker {
   const now = new Date();
+  let expanded = true;
 
   function fireChange(): void {
     onTimeChange(readTime());
@@ -69,6 +71,38 @@ export function createMeetTimePicker(
   const meetBtn = makeLink("LET'S MEET \u2192", '0.5');
   const backBtn = makeLink('\u2190 BACK TO NOW', '0.35');
 
+  // Minimized summary — shows time, tap to expand
+  const summary = document.createElement('div');
+  summary.style.cssText = [
+    'cursor:pointer',
+    'font-family:' + UI_FONT,
+    'font-size:clamp(12px, 2vw, 18px)',
+    'color:#e0e0e8;opacity:0.4',
+    'user-select:none;display:none',
+    'padding:2px 8px',
+  ].join(';');
+
+  function updateSummary(): void {
+    summary.textContent = formatDigital(readTime(), false);
+  }
+
+  // Full content wrapper for easy show/hide
+  const fullContent = document.createElement('div');
+  fullContent.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:8px';
+  fullContent.append(dateSelector.element, drums, meetBtn, backBtn);
+
+  function setExpanded(val: boolean): void {
+    expanded = val;
+    fullContent.style.display = val ? 'flex' : 'none';
+    summary.style.display = val ? 'none' : 'block';
+    if (!val) updateSummary();
+  }
+
+  summary.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setExpanded(true);
+  });
+
   meetBtn.addEventListener('click', () => { onShare(readTime(), dateSelector.getSelection()); });
   backBtn.addEventListener('click', () => {
     onBack();
@@ -85,12 +119,21 @@ export function createMeetTimePicker(
     'display:none',
     'flex-direction:column',
     'align-items:center',
-    'gap:8px',
     'background:rgba(11,11,18,0.7)',
     'padding:10px 20px 8px',
     'border-radius:10px',
   ].join(';');
-  container.append(dateSelector.element, drums, meetBtn, backBtn);
+  container.append(fullContent, summary);
+
+  // Click outside → minimize
+  document.addEventListener('click', (e) => {
+    if (container.style.display === 'none') return;
+    if (!expanded) return;
+    if (container.contains(e.target as Node)) return;
+    setExpanded(false);
+  });
+
+  container.addEventListener('click', (e) => { e.stopPropagation(); });
 
   return {
     element: container,
@@ -100,6 +143,7 @@ export function createMeetTimePicker(
       mCol.setValue(d.getMinutes());
       sCol.setValue(d.getSeconds());
       dateSelector.reset();
+      setExpanded(true);
       container.style.display = 'flex';
       fireChange();
     },

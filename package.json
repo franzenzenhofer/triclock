@@ -1,6 +1,6 @@
 {
   "name": "triclock",
-  "version": "1.0.67",
+  "version": "1.0.86",
   "type": "module",
   "private": true,
   "scripts": {
