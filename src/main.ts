@@ -181,14 +181,17 @@ function handleDigitalTimeToggle(clientX: number, clientY: number): void {
   syncConfigUI();
 }
 
-canvas.addEventListener('click', (e) => {
-  handleDigitalTimeToggle(e.clientX, e.clientY);
-});
 canvas.addEventListener('touchend', (e) => {
   const t = e.changedTouches[0];
   if (!t) return;
-  handleDigitalTimeToggle(t.clientX, t.clientY);
-}, { passive: true });
+  if (digitalTimeHitTest(t.clientX, t.clientY)) {
+    e.preventDefault();
+    handleDigitalTimeToggle(t.clientX, t.clientY);
+  }
+});
+canvas.addEventListener('click', (e) => {
+  handleDigitalTimeToggle(e.clientX, e.clientY);
+});
 
 const loop = createLoop(ctx, () => state, () => config, getTime);
 loop.start();
