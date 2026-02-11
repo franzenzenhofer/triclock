@@ -1,6 +1,8 @@
 import type { TimeValues } from '../types/index.js';
+import type { DateSelection } from './date-selector.js';
 import { UI_FONT } from '../constants.js';
 import { createDrumColumn } from './drum-picker.js';
+import { createDateSelector } from './date-selector.js';
 
 export interface MeetTimePicker {
   readonly element: HTMLElement;
@@ -41,7 +43,7 @@ function makeSep(): HTMLElement {
 
 export function createMeetTimePicker(
   onTimeChange: (time: TimeValues) => void,
-  onShare: (time: TimeValues) => void,
+  onShare: (time: TimeValues, date: DateSelection) => void,
   onBack: () => void,
 ): MeetTimePicker {
   const now = new Date();
@@ -58,6 +60,8 @@ export function createMeetTimePicker(
     return { hours: hCol.getValue(), minutes: mCol.getValue(), seconds: sCol.getValue(), ms: 0 };
   }
 
+  const dateSelector = createDateSelector();
+
   const drums = document.createElement('div');
   drums.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:4px';
   drums.append(hCol.element, makeSep(), mCol.element, makeSep(), sCol.element);
@@ -65,7 +69,7 @@ export function createMeetTimePicker(
   const meetBtn = makeLink("LET'S MEET \u2192", '0.5');
   const backBtn = makeLink('\u2190 BACK TO NOW', '0.35');
 
-  meetBtn.addEventListener('click', () => { onShare(readTime()); });
+  meetBtn.addEventListener('click', () => { onShare(readTime(), dateSelector.getSelection()); });
   backBtn.addEventListener('click', () => {
     onBack();
     container.style.display = 'none';
@@ -86,7 +90,7 @@ export function createMeetTimePicker(
     'padding:10px 20px 8px',
     'border-radius:10px',
   ].join(';');
-  container.append(drums, meetBtn, backBtn);
+  container.append(dateSelector.element, drums, meetBtn, backBtn);
 
   return {
     element: container,
@@ -95,6 +99,7 @@ export function createMeetTimePicker(
       hCol.setValue(d.getHours());
       mCol.setValue(d.getMinutes());
       sCol.setValue(d.getSeconds());
+      dateSelector.reset();
       container.style.display = 'flex';
       fireChange();
     },
