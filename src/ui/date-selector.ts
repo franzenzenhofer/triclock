@@ -52,16 +52,20 @@ export function createDateSelector(): DateSelector {
   tomorrowBtn.textContent = 'TOMORROW';
   tomorrowBtn.style.cssText = LABEL_STYLE;
 
+  const pickWrap = document.createElement('div');
+  pickWrap.style.cssText = 'position:relative;display:inline-block';
+
   const pickBtn = document.createElement('button');
   pickBtn.textContent = 'PICK DATE';
   pickBtn.style.cssText = LABEL_STYLE;
 
-  const buttons = [todayBtn, tomorrowBtn, pickBtn];
-
   const input = document.createElement('input');
   input.type = 'date';
-  input.style.cssText = 'position:absolute;opacity:0;width:0;height:0;pointer-events:none';
+  input.style.cssText = 'position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%';
   input.min = new Date().toISOString().slice(0, 10);
+  pickWrap.append(pickBtn, input);
+
+  const buttons = [todayBtn, tomorrowBtn, pickBtn];
 
   function highlight(): void {
     const active = kind === 'today' ? 0 : kind === 'tomorrow' ? 1 : 2;
@@ -81,7 +85,6 @@ export function createDateSelector(): DateSelector {
 
   todayBtn.addEventListener('click', () => { select('today'); });
   tomorrowBtn.addEventListener('click', () => { select('tomorrow'); });
-  pickBtn.addEventListener('click', () => { input.showPicker(); });
 
   input.addEventListener('change', () => {
     if (!input.value) return;
@@ -98,7 +101,7 @@ export function createDateSelector(): DateSelector {
 
   const row = document.createElement('div');
   row.style.cssText = 'display:flex;align-items:center;justify-content:center;position:relative';
-  row.append(todayBtn, makeDot(), tomorrowBtn, makeDot(), pickBtn, input);
+  row.append(todayBtn, makeDot(), tomorrowBtn, makeDot(), pickWrap);
   highlight();
 
   return {
