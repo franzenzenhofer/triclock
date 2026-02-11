@@ -3,7 +3,7 @@ import type { DateSelection } from './date-selector.js';
 import { UI_FONT } from '../constants.js';
 import { createDrumColumn } from './drum-picker.js';
 import { createDateSelector } from './date-selector.js';
-import { formatDigital } from '../time/format-digital.js';
+import { padTwo } from '../time/pad-two.js';
 
 export interface MeetTimePicker {
   readonly element: HTMLElement;
@@ -72,28 +72,25 @@ export function createMeetTimePicker(
   const meetBtn = makeLink("LET'S MEET \u2192", '0.5');
   const backBtn = makeLink('\u2190 BACK TO NOW', '0.35');
 
-  // Minimized summary — looks like picker condensed to one line
+  // Minimized summary — identical to drums row but static digits
+  const DIGIT_STYLE = 'width:48px;height:36px;display:flex;align-items:center;justify-content:center;'
+    + 'font-family:' + UI_FONT + ';font-size:22px;color:#e0e0e8;user-select:none';
+  const hDigit = document.createElement('div');
+  hDigit.style.cssText = DIGIT_STYLE;
+  const mDigit = document.createElement('div');
+  mDigit.style.cssText = DIGIT_STYLE;
+  const sDigit = document.createElement('div');
+  sDigit.style.cssText = DIGIT_STYLE;
+
   const summary = document.createElement('div');
-  summary.style.cssText = [
-    'cursor:pointer',
-    'font-family:' + UI_FONT,
-    'font-size:22px',
-    'color:#e0e0e8;opacity:0.5',
-    'user-select:none;display:none',
-    'padding:4px 8px',
-    'letter-spacing:0.04em',
-    'text-align:center',
-    'transition:opacity 0.25s ease',
-  ].join(';');
-  summary.addEventListener('mouseenter', () => { summary.style.opacity = '0.7'; });
-  summary.addEventListener('mouseleave', () => { summary.style.opacity = '0.5'; });
+  summary.style.cssText = 'display:none;align-items:center;justify-content:center;gap:4px;cursor:pointer';
+  summary.append(hDigit, makeSep(), mDigit, makeSep(), sDigit);
 
   function updateSummary(): void {
     const t = readTime();
-    const date = dateSelector.getSelection();
-    const timeStr = formatDigital(t, false);
-    const label = date.label === 'today' ? '' : date.label.toUpperCase() + ' ';
-    summary.textContent = label + timeStr;
+    hDigit.textContent = padTwo(t.hours);
+    mDigit.textContent = padTwo(t.minutes);
+    sDigit.textContent = padTwo(t.seconds);
   }
 
   // Full content wrapper for easy show/hide
@@ -104,7 +101,7 @@ export function createMeetTimePicker(
   function setExpanded(val: boolean): void {
     expanded = val;
     fullContent.style.display = val ? 'flex' : 'none';
-    summary.style.display = val ? 'none' : 'block';
+    summary.style.display = val ? 'none' : 'flex';
     if (!val) updateSummary();
   }
 
