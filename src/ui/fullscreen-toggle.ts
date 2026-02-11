@@ -61,11 +61,11 @@ export function createFullscreenToggle(config: TrichronoConfig): HTMLElement {
   }
   btn.style.cssText = [
     'position:fixed',
-    'bottom:16px',
-    'right:50px',
+    'bottom:10px',
+    'right:40px',
     'cursor:pointer',
     'color:' + config.digitalTime.color,
-    'opacity:0.25',
+    'opacity:0.15',
     'z-index:100',
     'user-select:none',
     'line-height:0',
@@ -79,8 +79,8 @@ export function createFullscreenToggle(config: TrichronoConfig): HTMLElement {
 
   updateIcon();
 
-  btn.addEventListener('mouseenter', () => { btn.style.opacity = '0.5'; });
-  btn.addEventListener('mouseleave', () => { btn.style.opacity = '0.25'; });
+  btn.addEventListener('mouseenter', () => { btn.style.opacity = '0.30'; });
+  btn.addEventListener('mouseleave', () => { btn.style.opacity = '0.15'; });
   btn.addEventListener('click', () => {
     if (isFullscreen()) {
       void document.exitFullscreen();

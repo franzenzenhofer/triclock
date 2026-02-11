@@ -11,3 +11,4 @@ export { createMeetTimePicker, createAnyTimeLink } from './meet-time-picker.js';
 export { shareMeetImage } from './share-meet.js';
 export type { DateSelection } from './date-selector.js';
 export { createInstallButton } from './install-button.js';
+export { startOnboarding } from './onboarding.js';

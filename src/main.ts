@@ -4,11 +4,12 @@ import { setupCanvas, computeLayout, applyLayout } from './canvas/index.js';
 import type { LayoutInput } from './canvas/index.js';
 import { getCurrentTime } from './time/get-current-time.js';
 import { createLoop } from './animation/index.js';
+import { TOGGLE_PANEL_KEY } from './constants.js';
 import {
   createPanel, setupKeybindings, createConfigToggleLink,
   createShareLink, createModeSelector, applyDisplayMode, loadSavedMode,
   createFullscreenToggle, createMeetTimePicker, createAnyTimeLink,
-  shareMeetImage, createInstallButton,
+  shareMeetImage, createInstallButton, startOnboarding,
 } from './ui/index.js';
 
 const { canvas, ctx } = setupCanvas('c');
@@ -16,14 +17,21 @@ const hashMode = loadHashMode();
 const hashOverrides = loadHashConfig();
 const config: TrichronoConfig = createConfig(hashOverrides);
 
+const hasHash = !!hashMode || !!hashOverrides;
+const savedMode = loadSavedMode();
+const needsOnboarding = !hasHash && !savedMode;
+
 if (hashMode) {
   applyDisplayMode(config, hashMode);
 } else if (!hashOverrides) {
-  const savedMode = loadSavedMode();
-  if (savedMode) applyDisplayMode(config, savedMode);
+  if (needsOnboarding) {
+    applyDisplayMode(config, 'pure');
+  } else if (savedMode) {
+    applyDisplayMode(config, savedMode);
+  }
 }
 
-const modeSelector = createModeSelector(config, handleConfigChange);
+const modeSelector = createModeSelector(config, handleUserConfigChange);
 
 function measureTopInset(): number {
   return modeSelector.element.getBoundingClientRect().bottom;
@@ -48,15 +56,37 @@ function handleResize(): void {
   applyLayout(canvas, ctx, state);
 }
 
-const { pane: panel, syncTriangles } = createPanel(config, handleConfigChange);
+// Internal config sync — NEVER touches hash. Used by panel (Tweakpane).
+const { pane: panel, syncTriangles } = createPanel(config, syncConfigUI);
 
-function handleConfigChange(): void {
+function syncConfigUI(): void {
   saveConfig(config);
-  updateHash(config);
   handleResize();
   modeSelector.updateHighlight();
   syncTriangles();
   panel.refresh();
+}
+
+let cancelOnboarding: (() => void) | null = null;
+
+function endOnboardingMode(): void {
+  modeSelector.setOnboarding(false);
+  modeSelector.updateHighlight();
+}
+
+function cancelOnboardingIfActive(): void {
+  if (cancelOnboarding) {
+    cancelOnboarding();
+    cancelOnboarding = null;
+    endOnboardingMode();
+  }
+}
+
+// Explicit user action: mode selector click → enable hash + sync + update hash.
+function handleUserConfigChange(): void {
+  cancelOnboardingIfActive();
+  syncConfigUI();
+  updateHash(config);
 }
 
 window.addEventListener('resize', handleResize, { passive: true });
@@ -64,8 +94,14 @@ applyLayout(canvas, ctx, state);
 
 setupKeybindings(panel);
 createFullscreenToggle(config);
-createConfigToggleLink(panel, config);
+const configToggle = createConfigToggleLink(panel, config);
 createInstallButton(config);
+
+// Cancel onboarding when user opens config panel (gear click or 'd' key)
+configToggle.addEventListener('click', cancelOnboardingIfActive);
+window.addEventListener('keydown', (e) => {
+  if (e.key.toLowerCase() === TOGGLE_PANEL_KEY) cancelOnboardingIfActive();
+});
 
 // Time override for "Share Any Time" feature
 let timeOverride: TimeValues | null = null;
@@ -102,6 +138,24 @@ const meetPicker = createMeetTimePicker(
   () => { timeOverride = null; shareWrap.style.display = 'flex'; },
 );
 document.body.appendChild(meetPicker.element);
+
+// Onboarding: fade through modes for first-time visitors
+// Pure → Prism → Pure → Flux → Pure (~7s total)
+if (needsOnboarding) {
+  modeSelector.setOnboarding(true);
+  const rawCancel = startOnboarding(
+    canvas,
+    (name) => {
+      applyDisplayMode(config, name);
+      handleResize();
+      modeSelector.updateHighlight();
+      syncTriangles();
+      panel.refresh();
+    },
+    endOnboardingMode,
+  );
+  cancelOnboarding = rawCancel;
+}
 
 const loop = createLoop(ctx, () => state, () => config, getTime);
 loop.start();

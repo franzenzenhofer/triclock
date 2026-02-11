@@ -25,16 +25,21 @@ interface BeforeInstallPromptEvent extends Event {
   readonly prompt: () => Promise<void>;
 }
 
+function supportsFullscreen(): boolean {
+  return typeof document.documentElement.requestFullscreen === 'function';
+}
+
 export function createInstallButton(config: TrichronoConfig): HTMLElement {
   const btn = document.createElement('div');
   btn.appendChild(createDownloadSvg());
+  const rightPos = supportsFullscreen() ? '70px' : '40px';
   btn.style.cssText = [
     'position:fixed',
-    'bottom:16px',
-    'right:84px',
+    'bottom:10px',
+    'right:' + rightPos,
     'cursor:pointer',
     'color:' + config.digitalTime.color,
-    'opacity:0.25',
+    'opacity:0.15',
     'z-index:100',
     'user-select:none',
     'line-height:0',
@@ -43,8 +48,8 @@ export function createInstallButton(config: TrichronoConfig): HTMLElement {
     'display:none',
   ].join(';');
 
-  btn.addEventListener('mouseenter', () => { btn.style.opacity = '0.5'; });
-  btn.addEventListener('mouseleave', () => { btn.style.opacity = '0.25'; });
+  btn.addEventListener('mouseenter', () => { btn.style.opacity = '0.30'; });
+  btn.addEventListener('mouseleave', () => { btn.style.opacity = '0.15'; });
 
   let deferredPrompt: BeforeInstallPromptEvent | null = null;
 

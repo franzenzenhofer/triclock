@@ -10,6 +10,7 @@ import {
 export interface ModeSelector {
   readonly element: HTMLElement;
   readonly updateHighlight: () => void;
+  readonly setOnboarding: (active: boolean) => void;
 }
 
 export function createModeSelector(
@@ -39,7 +40,13 @@ export function createModeSelector(
     'letter-spacing:0.35em',
     'color:#e0e0e8',
     'opacity:0.4',
+    'cursor:pointer',
   ].join(';');
+  header.addEventListener('click', () => {
+    localStorage.clear();
+    window.history.replaceState(null, '', window.location.pathname);
+    window.location.reload();
+  });
   const nav = document.createElement('nav');
   nav.style.cssText = [
     'display:flex',
@@ -100,19 +107,28 @@ export function createModeSelector(
     nav.appendChild(btn);
   });
 
+  let onboardingActive = false;
+
   function highlight(): void {
     const active = detectActiveMode(config);
+    const activeOp = onboardingActive ? '0.65' : '0.35';
+    const inactiveOp = onboardingActive ? '0.08' : '0.18';
     DISPLAY_MODES.forEach((mode, i) => {
       const btn = buttons[i];
       if (!btn) return;
       const isActive = mode.name === active;
       btn.style.fontWeight = '400';
-      btn.style.opacity = isActive ? '0.35' : '0.18';
+      btn.style.opacity = isActive ? activeOp : inactiveOp;
     });
+  }
+
+  function setOnboarding(active: boolean): void {
+    onboardingActive = active;
+    highlight();
   }
 
   highlight();
   document.body.appendChild(wrapper);
 
-  return { element: wrapper, updateHighlight: highlight };
+  return { element: wrapper, updateHighlight: highlight, setOnboarding };
 }

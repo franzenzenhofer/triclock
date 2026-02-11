@@ -6,6 +6,25 @@ import { detectActiveMode, applyDisplayMode } from '../ui/display-modes.js';
 import type { DisplayModeName } from '../ui/display-modes.js';
 
 const MODE_NAMES: ReadonlySet<string> = new Set(['prism', 'pure', 'flux']);
+const EPSILON = 1e-10;
+
+function valuesEqual(a: unknown, b: unknown): boolean {
+  if (typeof a === 'number' && typeof b === 'number') {
+    return Math.abs(a - b) < EPSILON;
+  }
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return a.length === b.length && a.every((v, i) => valuesEqual(v, b[i]));
+  }
+  if (typeof a === 'object' && a !== null && typeof b === 'object' && b !== null
+      && !Array.isArray(a) && !Array.isArray(b)) {
+    const aObj = a as Record<string, unknown>;
+    const bObj = b as Record<string, unknown>;
+    const aKeys = Object.keys(aObj);
+    return aKeys.length === Object.keys(bObj).length
+      && aKeys.every(k => valuesEqual(aObj[k], bObj[k]));
+  }
+  return a === b;
+}
 
 function diff(
   current: Record<string, unknown>,
@@ -28,7 +47,7 @@ function diff(
         result[key] = nested;
         hasChanges = true;
       }
-    } else if (JSON.stringify(cur) !== JSON.stringify(def)) {
+    } else if (!valuesEqual(cur, def)) {
       result[key] = cur;
       hasChanges = true;
     }

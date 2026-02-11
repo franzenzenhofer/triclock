@@ -34,11 +34,11 @@ export function createConfigToggleLink(
   link.appendChild(svg);
   link.style.cssText = [
     'position:fixed',
-    'bottom:16px',
-    'right:16px',
+    'bottom:10px',
+    'right:10px',
     'cursor:pointer',
     'color:' + dt.color,
-    'opacity:0.25',
+    'opacity:0.15',
     'z-index:100',
     'user-select:none',
     'line-height:0',
@@ -46,8 +46,8 @@ export function createConfigToggleLink(
     'transition:opacity 0.25s ease',
   ].join(';');
 
-  link.addEventListener('mouseenter', () => { link.style.opacity = '0.5'; });
-  link.addEventListener('mouseleave', () => { link.style.opacity = '0.25'; });
+  link.addEventListener('mouseenter', () => { link.style.opacity = '0.30'; });
+  link.addEventListener('mouseleave', () => { link.style.opacity = '0.15'; });
   link.addEventListener('click', () => { togglePanel(pane); });
   document.body.appendChild(link);
   return link;
