@@ -9,7 +9,20 @@ export interface DrumPickerColumn {
 const ITEM_H = 36;
 const VISIBLE = 5;
 const HALF = Math.floor(VISIBLE / 2);
+const REPEATS = 5;
+const CENTER = 2;
 const MASK = 'linear-gradient(to bottom,transparent,rgba(0,0,0,.3) 15%,#000 35%,#000 65%,rgba(0,0,0,.3) 85%,transparent)';
+
+const ITEM_STYLE = [
+  'height:' + String(ITEM_H) + 'px',
+  'display:flex;align-items:center;justify-content:center',
+  'font-family:' + UI_FONT,
+  'font-size:22px;color:#e0e0e8;user-select:none',
+].join(';');
+
+function mod(n: number, m: number): number {
+  return ((n % m) + m) % m;
+}
 
 export function createDrumColumn(
   min: number,
@@ -18,7 +31,8 @@ export function createDrumColumn(
   onChange: () => void,
 ): DrumPickerColumn {
   const count = max - min + 1;
-  let selected = Math.max(0, Math.min(count - 1, initial - min));
+  const total = count * REPEATS;
+  let selected = CENTER * count + Math.max(0, Math.min(count - 1, initial - min));
   let offset = -selected * ITEM_H;
 
   const container = document.createElement('div');
@@ -40,15 +54,10 @@ export function createDrumColumn(
     'transition:transform .15s ease-out',
   ].join(';');
 
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < total; i++) {
     const item = document.createElement('div');
-    item.textContent = String(min + i).padStart(2, '0');
-    item.style.cssText = [
-      'height:' + String(ITEM_H) + 'px',
-      'display:flex;align-items:center;justify-content:center',
-      'font-family:' + UI_FONT,
-      'font-size:22px;color:#e0e0e8;user-select:none',
-    ].join(';');
+    item.textContent = String(min + (i % count)).padStart(2, '0');
+    item.style.cssText = ITEM_STYLE;
     item.addEventListener('click', () => { select(i); });
     track.appendChild(item);
   }
@@ -69,12 +78,26 @@ export function createDrumColumn(
     track.style.transform = 'translateY(' + String(offset) + 'px)';
   }
 
+  function recenter(): void {
+    const valueIdx = mod(selected, count);
+    const center = CENTER * count + valueIdx;
+    if (selected === center) return;
+    track.style.transition = 'none';
+    selected = center;
+    offset = -selected * ITEM_H;
+    applyOffset();
+    void track.offsetHeight;
+    track.style.transition = 'transform .15s ease-out';
+  }
+
   function select(idx: number): void {
-    selected = Math.max(0, Math.min(count - 1, idx));
+    selected = mod(idx, total);
     offset = -selected * ITEM_H;
     applyOffset();
     onChange();
   }
+
+  track.addEventListener('transitionend', recenter);
 
   // Wheel
   let wheelAcc = 0;
@@ -107,7 +130,6 @@ export function createDrumColumn(
     select(Math.round(-offset / ITEM_H));
   }
 
-  // Touch drag
   container.addEventListener('touchstart', (e) => {
     const touch = e.touches[0];
     if (!touch) return;
@@ -123,7 +145,6 @@ export function createDrumColumn(
 
   container.addEventListener('touchend', endDrag);
 
-  // Mouse drag
   let mouseDown = false;
   container.addEventListener('mousedown', (e) => {
     e.preventDefault();
@@ -147,9 +168,9 @@ export function createDrumColumn(
 
   return {
     element: container,
-    getValue: () => min + selected,
+    getValue: () => min + mod(selected, count),
     setValue(v: number): void {
-      selected = Math.max(0, Math.min(count - 1, v - min));
+      selected = CENTER * count + Math.max(0, Math.min(count - 1, v - min));
       offset = -selected * ITEM_H;
       applyOffset();
     },
