@@ -72,15 +72,24 @@ export function createMeetTimePicker(
   const meetBtn = makeLink("LET'S MEET \u2192", '0.5');
   const backBtn = makeLink('\u2190 BACK TO NOW', '0.35');
 
-  // Minimized summary — identical to drums row but static digits
-  const DIGIT_STYLE = 'width:48px;height:36px;display:flex;align-items:center;justify-content:center;'
-    + 'font-family:' + UI_FONT + ';font-size:22px;color:#e0e0e8;user-select:none';
-  const hDigit = document.createElement('div');
-  hDigit.style.cssText = DIGIT_STYLE;
-  const mDigit = document.createElement('div');
-  mDigit.style.cssText = DIGIT_STYLE;
-  const sDigit = document.createElement('div');
-  sDigit.style.cssText = DIGIT_STYLE;
+  // Minimized summary — pixel-perfect replica of drum center row
+  function makeDigitCell(): HTMLDivElement {
+    const cell = document.createElement('div');
+    cell.style.cssText = [
+      'position:relative',
+      'width:48px',
+      'height:36px',
+      'display:flex;align-items:center;justify-content:center',
+      'font-family:' + UI_FONT,
+      'font-size:22px;color:#e0e0e8;user-select:none',
+      'border-top:1px solid rgba(224,224,232,.2)',
+      'border-bottom:1px solid rgba(224,224,232,.2)',
+    ].join(';');
+    return cell;
+  }
+  const hDigit = makeDigitCell();
+  const mDigit = makeDigitCell();
+  const sDigit = makeDigitCell();
 
   const summary = document.createElement('div');
   summary.style.cssText = 'display:none;align-items:center;justify-content:center;gap:4px;cursor:pointer';
