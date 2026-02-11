@@ -7,6 +7,7 @@ import { renderFrame } from '../render/render-frame.js';
 import { UI_FONT } from '../constants.js';
 
 const MAX_DIM = 4096;
+const CROP_PAD = 0.25;
 
 function renderShareCanvas(
   source: HTMLCanvasElement,
@@ -15,18 +16,47 @@ function renderShareCanvas(
   const w = source.clientWidth;
   const h = source.clientHeight;
   const dpr = Math.max(window.devicePixelRatio || 1, 3);
-  const rawW = Math.floor(w * dpr);
-  const rawH = Math.floor(h * dpr);
-  const scale = Math.min(1, MAX_DIM / Math.max(rawW, rawH));
+  const rawMax = Math.floor(Math.max(w, h) * dpr);
+  const scale = Math.min(1, MAX_DIM / rawMax);
   const finalDpr = dpr * scale;
 
-  const offscreen = document.createElement('canvas');
-  const ctx = offscreen.getContext('2d');
-  if (!ctx) throw new Error('Failed to get 2d context for share canvas');
+  const full = document.createElement('canvas');
+  const fullCtx = full.getContext('2d');
+  if (!fullCtx) throw new Error('Failed to get 2d context for share canvas');
   const state = computeLayout(w, h, finalDpr, config.geometry.sizeRatio);
-  applyLayout(offscreen, ctx, state);
-  renderFrame(ctx, state, getCurrentTime(), config);
-  return offscreen;
+  applyLayout(full, fullCtx, state);
+  renderFrame(fullCtx, state, getCurrentTime(), config);
+
+  return cropToClockRegion(full, state, config, finalDpr);
+}
+
+function cropToClockRegion(
+  full: HTMLCanvasElement,
+  state: { cx: number; cy: number; size: number },
+  config: TrichronoConfig,
+  dpr: number,
+): HTMLCanvasElement {
+  const pad = state.size * CROP_PAD;
+  const halfW = state.size * config.geometry.halfBase + pad;
+  const top = state.cy - state.size - pad;
+  const bot = state.cy + state.size * config.geometry.botY + pad;
+  const cropW = halfW * 2;
+  const cropH = bot - top;
+  const side = Math.max(cropW, cropH);
+  const cx = state.cx;
+  const cy = (top + bot) / 2;
+
+  const sx = Math.max(0, (cx - side / 2) * dpr);
+  const sy = Math.max(0, (cy - side / 2) * dpr);
+  const sSize = Math.floor(side * dpr);
+
+  const out = document.createElement('canvas');
+  out.width = sSize;
+  out.height = sSize;
+  const ctx = out.getContext('2d');
+  if (!ctx) throw new Error('Failed to get 2d context for crop canvas');
+  ctx.drawImage(full, sx, sy, sSize, sSize, 0, 0, sSize, sSize);
+  return out;
 }
 
 function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {

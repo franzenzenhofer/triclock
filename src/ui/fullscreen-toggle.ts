@@ -47,8 +47,18 @@ function isFullscreen(): boolean {
   return document.fullscreenElement !== null;
 }
 
+function supportsFullscreen(): boolean {
+  return typeof document.documentElement.requestFullscreen === 'function';
+}
+
 export function createFullscreenToggle(config: TrichronoConfig): HTMLElement {
   const btn = document.createElement('div');
+
+  if (!supportsFullscreen()) {
+    btn.style.display = 'none';
+    document.body.appendChild(btn);
+    return btn;
+  }
   btn.style.cssText = [
     'position:fixed',
     'bottom:16px',
