@@ -5,6 +5,7 @@ declare module 'tweakpane' {
 
   export interface BindingApi {
     on(event: 'change', handler: (ev: TpChangeEvent<unknown>) => void): this;
+    refresh(): void;
   }
 
   export interface ButtonApi {

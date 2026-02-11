@@ -32,10 +32,15 @@ function applyPanelStyles(el: HTMLElement): void {
   }
 }
 
+export interface PanelHandle {
+  readonly pane: Pane;
+  readonly syncTriangles: () => void;
+}
+
 export function createPanel(
   config: TrichronoConfig,
   onChange: () => void,
-): Pane {
+): PanelHandle {
   const pane = new Pane({ title: 'TRICLOCK v' + __APP_VERSION__ });
   pane.element.style.display = 'none';
   applyPanelStyles(pane.element);
@@ -63,7 +68,7 @@ export function createPanel(
   bindScales(geometry.addFolder({ title: 'Scale Ticks' }), config, onChange);
 
   bindGlow(glowLayers.addFolder({ title: 'Edge Progress' }), config, onChange);
-  bindTriangles(glowLayers.addFolder({ title: 'Triangle Layers' }), config, onChange);
+  const syncTriangles = bindTriangles(glowLayers.addFolder({ title: 'Triangle Layers' }), config, onChange);
   bindTips(glowLayers.addFolder({ title: 'Tips' }), config, onChange);
 
   pane.addButton({ title: 'Copy Share Link' }).on('click', () => {
@@ -90,5 +95,5 @@ export function createPanel(
 
   pane.addButton({ title: 'Close Config' }).on('click', () => { togglePanel(pane); });
 
-  return pane;
+  return { pane, syncTriangles };
 }

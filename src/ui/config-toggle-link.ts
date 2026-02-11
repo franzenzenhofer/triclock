@@ -5,8 +5,8 @@ import { togglePanel } from './toggle-panel.js';
 function createGearSvg(): SVGSVGElement {
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('width', '16');
-  svg.setAttribute('height', '16');
+  svg.setAttribute('width', '18');
+  svg.setAttribute('height', '18');
   svg.setAttribute('viewBox', '0 0 24 24');
   svg.setAttribute('fill', 'none');
   svg.setAttribute('stroke', 'currentColor');
@@ -34,17 +34,20 @@ export function createConfigToggleLink(
   link.appendChild(svg);
   link.style.cssText = [
     'position:fixed',
-    'bottom:4px',
-    'right:4px',
+    'bottom:16px',
+    'right:16px',
     'cursor:pointer',
     'color:' + dt.color,
-    'opacity:' + String(Math.min(dt.alpha * 1.2, 0.2)),
+    'opacity:0.25',
     'z-index:100',
     'user-select:none',
     'line-height:0',
     'padding:8px',
+    'transition:opacity 0.25s ease',
   ].join(';');
 
+  link.addEventListener('mouseenter', () => { link.style.opacity = '0.5'; });
+  link.addEventListener('mouseleave', () => { link.style.opacity = '0.25'; });
   link.addEventListener('click', () => { togglePanel(pane); });
   document.body.appendChild(link);
   return link;
