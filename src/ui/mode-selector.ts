@@ -19,7 +19,7 @@ export function createModeSelector(
   const wrapper = document.createElement('div');
   wrapper.style.cssText = [
     'position:fixed',
-    'top:16px',
+    'top:clamp(12px, 2.5vh, 24px)',
     'left:50%',
     'transform:translateX(-50%)',
     'z-index:100',
@@ -27,18 +27,18 @@ export function createModeSelector(
     'display:flex',
     'flex-direction:column',
     'align-items:center',
-    'gap:4px',
+    'gap:clamp(6px, 1.2vh, 12px)',
   ].join(';');
 
   const header = document.createElement('div');
   header.textContent = 'TRICLOCK';
   header.style.cssText = [
     'font-family:' + UI_FONT,
-    'font-size:clamp(8px, 1vw, 11px)',
-    'font-weight:300',
-    'letter-spacing:0.3em',
+    'font-size:clamp(13px, 1.8vw, 20px)',
+    'font-weight:600',
+    'letter-spacing:0.4em',
     'color:#e0e0e8',
-    'opacity:0.15',
+    'opacity:0.4',
   ].join(';');
   wrapper.appendChild(header);
 
@@ -72,12 +72,12 @@ export function createModeSelector(
       'background:none',
       'border:none',
       'cursor:pointer',
-      'padding:4px 6px',
+      'padding:4px 8px',
       'font-family:' + UI_FONT,
-      'font-size:clamp(9px, 1.2vw, 13px)',
+      'font-size:clamp(9px, 1.1vw, 12px)',
       'font-weight:400',
       'text-transform:uppercase',
-      'letter-spacing:0.15em',
+      'letter-spacing:0.18em',
       'color:#e0e0e8',
       'opacity:0.2',
       'transition:opacity 0.25s ease',
