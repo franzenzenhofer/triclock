@@ -62,13 +62,13 @@ export function createDateSelector(): DateSelector {
 
   const input = document.createElement('input');
   input.type = 'date';
-  input.style.cssText = 'position:absolute;inset:0;opacity:0;pointer-events:none;width:100%;height:100%';
+  input.style.cssText = 'position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer';
   input.min = new Date().toISOString().slice(0, 10);
   pickWrap.append(pickBtn, input);
 
-  // Button click opens native date picker on both desktop and mobile
-  pickBtn.addEventListener('click', () => {
-    try { input.showPicker(); } catch { input.click(); }
+  // Input click also calls showPicker() so desktop gets the calendar popup
+  input.addEventListener('click', () => {
+    try { input.showPicker(); } catch { /* native tap handles it */ }
   });
 
   const buttons = [todayBtn, tomorrowBtn, pickBtn];
