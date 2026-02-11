@@ -105,7 +105,7 @@ export function createMeetTimePicker(
   // Full content wrapper for easy show/hide
   const fullContent = document.createElement('div');
   fullContent.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:8px';
-  fullContent.append(dateSelector.element, drums, meetBtn, backBtn);
+  fullContent.append(dateSelector.element, drums);
 
   function setExpanded(val: boolean): void {
     expanded = val;
@@ -138,8 +138,9 @@ export function createMeetTimePicker(
     'background:rgba(11,11,18,0.7)',
     'padding:10px 20px 8px',
     'border-radius:10px',
+    'gap:8px',
   ].join(';');
-  container.append(fullContent, summary);
+  container.append(fullContent, summary, meetBtn, backBtn);
 
   // Click outside → minimize
   document.addEventListener('click', (e) => {
