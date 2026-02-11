@@ -94,7 +94,7 @@ export function createMeetTimePicker(
   const container = document.createElement('div');
   container.style.cssText = [
     'position:fixed',
-    'bottom:16px',
+    'bottom:12px',
     'left:50%',
     'transform:translateX(-50%)',
     'z-index:100',
@@ -102,6 +102,9 @@ export function createMeetTimePicker(
     'flex-direction:column',
     'align-items:center',
     'gap:8px',
+    'background:rgba(11,11,18,0.92)',
+    'padding:10px 20px 8px',
+    'border-radius:10px',
   ].join(';');
   container.append(row, meetBtn, backBtn);
 
