@@ -39,6 +39,9 @@ export function bindTriangles(
   const syncWedge = bindLayerGroup(folder, 'Wedge Layers', () => config.triangles.wedgeLayers, (layers) => {
     mut.triangles.wedgeLayers = layers;
   }, onChange);
+  const syncGap = bindLayerGroup(folder, 'Gap', () => config.triangles.gapLayers, (layers) => {
+    mut.triangles.gapLayers = layers;
+  }, onChange);
 
   const plasmaParams: Record<string, unknown> = { ...config.triangles.plasma };
   const plasmaBindings: BindingApi[] = [];
@@ -115,5 +118,6 @@ export function bindTriangles(
     syncSector();
     syncCross();
     syncWedge();
+    syncGap();
   };
 }

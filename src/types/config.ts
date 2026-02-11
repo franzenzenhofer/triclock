@@ -88,6 +88,7 @@ export interface TrianglesConfig {
   readonly sectorLayers: readonly TriangleLayerDef[];
   readonly crossLayers: readonly TriangleLayerDef[];
   readonly wedgeLayers: readonly TriangleLayerDef[];
+  readonly gapLayers: readonly TriangleLayerDef[];
   readonly primaryLayer: TriangleLayerDef;
   readonly glowPasses: readonly GlowPass[];
   readonly shadowBlur: number;

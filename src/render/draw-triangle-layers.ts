@@ -2,6 +2,7 @@ import type { Point, TriangleVertices, TrichronoConfig } from '../types/index.js
 import type { BaseHsl } from '../color/compute-base-hsl.js';
 import { drawColorTriangle } from './draw-color-triangle.js';
 import { drawLayerGroup } from './draw-layer-group.js';
+import { lineIntersect } from '../math/line-intersect.js';
 
 interface TipPoints {
   readonly hTip: Point;
@@ -39,6 +40,13 @@ export function drawTriangleLayers(
     [verts.A, tips.hTip, tips.sTip],
     [verts.B, tips.hTip, tips.mTip],
     [verts.C, tips.mTip, tips.sTip],
+  ], step, base, config, size);
+
+  const g1 = lineIntersect(verts.A, tips.mTip, verts.B, tips.sTip);
+  const g2 = lineIntersect(verts.A, tips.mTip, verts.C, tips.hTip);
+  const g3 = lineIntersect(verts.B, tips.sTip, verts.C, tips.hTip);
+  drawLayerGroup(ctx, tc.gapLayers, [
+    [g1, g2, g3],
   ], step, base, config, size);
 
   const pl = tc.primaryLayer;
