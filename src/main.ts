@@ -67,7 +67,7 @@ createConfigToggleLink(panel, config);
 let timeOverride: TimeValues | null = null;
 const getTime = (): TimeValues => timeOverride ?? getCurrentTime();
 
-// Share links wrapper
+// Share links wrapper (horizontal layout)
 const shareWrap = document.createElement('div');
 shareWrap.style.cssText = [
   'position:fixed',
@@ -76,24 +76,26 @@ shareWrap.style.cssText = [
   'transform:translateX(-50%)',
   'z-index:100',
   'display:flex',
-  'flex-direction:column',
   'align-items:center',
-  'gap:4px',
+  'gap:8px',
 ].join(';');
 
 const shareLink = createShareLink(canvas, config);
+const dot = document.createElement('span');
+dot.textContent = '\u00b7';
+dot.style.cssText = 'color:#e0e0e8;opacity:0.25;user-select:none;font-size:12px';
 const anyTimeLink = createAnyTimeLink(() => {
   shareWrap.style.display = 'none';
   meetPicker.show();
 });
-shareWrap.append(shareLink, anyTimeLink);
+shareWrap.append(shareLink, dot, anyTimeLink);
 document.body.appendChild(shareWrap);
 
 // Meet time picker
 const meetPicker = createMeetTimePicker(
   (time) => { timeOverride = time; },
   (time) => { void shareMeetImage(canvas, config, time); },
-  () => { timeOverride = null; shareWrap.style.display = 'flex'; },
+  () => { timeOverride = null; shareWrap.style.display = ''; },
 );
 document.body.appendChild(meetPicker.element);
 

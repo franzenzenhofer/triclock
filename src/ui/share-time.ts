@@ -69,17 +69,21 @@ function cropToClockRegion(
   return out;
 }
 
-async function shareImage(
-  canvas: HTMLCanvasElement,
-  config: TrichronoConfig,
-): Promise<void> {
-  const time = getCurrentTime();
+interface ShareClockInput {
+  readonly canvas: HTMLCanvasElement;
+  readonly config: TrichronoConfig;
+  readonly time: TimeValues;
+  readonly title: string;
+  readonly prefix: string;
+}
+
+export async function shareClockImage(input: ShareClockInput): Promise<void> {
+  const { canvas, config, time, title, prefix } = input;
   const timeStr = formatDigital(time, true);
   const hash = configToHash(config);
   const url = window.location.origin + window.location.pathname + (hash ? '#' + hash : '');
-  const title = 'My ' + timeStr + ' looks like this';
   const text = title + '\n' + url;
-  const filename = 'triclock-' + timeStr.replace(/:/g, '') + '.png';
+  const filename = prefix + timeStr.replace(/:/g, '') + '.png';
 
   const shareCanvas = renderShareCanvas(canvas, config, time);
   const blob = await canvasToBlob(shareCanvas);
@@ -109,6 +113,14 @@ export function createShareLink(
 
   link.addEventListener('mouseenter', () => { link.style.opacity = '0.6'; });
   link.addEventListener('mouseleave', () => { link.style.opacity = '0.35'; });
-  link.addEventListener('click', () => { void shareImage(canvas, config); });
+  link.addEventListener('click', () => {
+    const time = getCurrentTime();
+    const timeStr = formatDigital(time, true);
+    void shareClockImage({
+      canvas, config, time,
+      title: 'My ' + timeStr + ' looks like this',
+      prefix: 'triclock-',
+    });
+  });
   return link;
 }

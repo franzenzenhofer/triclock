@@ -1,5 +1,6 @@
 import type { TimeValues } from '../types/index.js';
 import { UI_FONT } from '../constants.js';
+import { createDrumColumn } from './drum-picker.js';
 
 export interface MeetTimePicker {
   readonly element: HTMLElement;
@@ -7,45 +8,11 @@ export interface MeetTimePicker {
   readonly hide: () => void;
 }
 
-const INPUT_CSS = [
-  'background:transparent',
-  'border:none',
-  'border-bottom:1px solid rgba(224,224,232,0.25)',
-  'color:#e0e0e8',
-  'font-family:' + UI_FONT,
-  'font-size:clamp(18px, 4vw, 28px)',
-  'text-align:center',
-  'width:2.5ch',
-  'outline:none',
-  'padding:0 2px',
-].join(';');
-
-function clampInput(input: HTMLInputElement, max: number): number {
-  const v = Math.max(0, Math.min(max, parseInt(input.value, 10) || 0));
-  input.value = String(v).padStart(2, '0');
-  return v;
-}
-
-function readTime(hh: HTMLInputElement, mm: HTMLInputElement): TimeValues {
-  return { hours: clampInput(hh, 23), minutes: clampInput(mm, 59), seconds: 0, ms: 0 };
-}
-
-function makeInput(max: number, initial: number): HTMLInputElement {
-  const input = document.createElement('input');
-  input.type = 'number';
-  input.min = '0';
-  input.max = String(max);
-  input.inputMode = 'numeric';
-  input.value = String(initial).padStart(2, '0');
-  input.style.cssText = INPUT_CSS;
-  return input;
-}
-
-function makeButton(label: string, opacity: string): HTMLDivElement {
-  const btn = document.createElement('div');
-  btn.textContent = label;
-  btn.setAttribute('role', 'button');
-  btn.style.cssText = [
+function makeLink(label: string, opacity: string): HTMLDivElement {
+  const el = document.createElement('div');
+  el.textContent = label;
+  el.setAttribute('role', 'button');
+  el.style.cssText = [
     'cursor:pointer',
     'font-family:' + UI_FONT,
     'font-weight:500',
@@ -59,10 +26,17 @@ function makeButton(label: string, opacity: string): HTMLDivElement {
     'padding-bottom:2px',
     'transition:opacity 0.25s ease',
   ].join(';');
-  const hoverOp = String(Math.min(parseFloat(opacity) + 0.25, 0.9));
-  btn.addEventListener('mouseenter', () => { btn.style.opacity = hoverOp; });
-  btn.addEventListener('mouseleave', () => { btn.style.opacity = opacity; });
-  return btn;
+  const hover = String(Math.min(parseFloat(opacity) + 0.25, 0.9));
+  el.addEventListener('mouseenter', () => { el.style.opacity = hover; });
+  el.addEventListener('mouseleave', () => { el.style.opacity = opacity; });
+  return el;
+}
+
+function makeSep(): HTMLElement {
+  const s = document.createElement('span');
+  s.textContent = ':';
+  s.style.cssText = 'font-family:' + UI_FONT + ';font-size:22px;color:#e0e0e8;opacity:0.4;user-select:none';
+  return s;
 }
 
 export function createMeetTimePicker(
@@ -71,25 +45,31 @@ export function createMeetTimePicker(
   onBack: () => void,
 ): MeetTimePicker {
   const now = new Date();
-  const hh = makeInput(23, now.getHours());
-  const mm = makeInput(59, now.getMinutes());
 
-  const sep = document.createElement('span');
-  sep.textContent = ':';
-  sep.style.cssText = [
-    'font-family:' + UI_FONT,
-    'font-size:clamp(18px, 4vw, 28px)',
-    'color:#e0e0e8',
-    'opacity:0.4',
-    'user-select:none',
-  ].join(';');
+  function fireChange(): void {
+    onTimeChange(readTime());
+  }
 
-  const row = document.createElement('div');
-  row.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:2px';
-  row.append(hh, sep, mm);
+  const hCol = createDrumColumn(0, 23, now.getHours(), fireChange);
+  const mCol = createDrumColumn(0, 59, now.getMinutes(), fireChange);
+  const sCol = createDrumColumn(0, 59, now.getSeconds(), fireChange);
 
-  const meetBtn = makeButton("LET'S MEET \u2192", '0.5');
-  const backBtn = makeButton('\u2190 BACK TO NOW', '0.35');
+  function readTime(): TimeValues {
+    return { hours: hCol.getValue(), minutes: mCol.getValue(), seconds: sCol.getValue(), ms: 0 };
+  }
+
+  const drums = document.createElement('div');
+  drums.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:4px';
+  drums.append(hCol.element, makeSep(), mCol.element, makeSep(), sCol.element);
+
+  const meetBtn = makeLink("LET'S MEET \u2192", '0.5');
+  const backBtn = makeLink('\u2190 BACK TO NOW', '0.35');
+
+  meetBtn.addEventListener('click', () => { onShare(readTime()); });
+  backBtn.addEventListener('click', () => {
+    onBack();
+    container.style.display = 'none';
+  });
 
   const container = document.createElement('div');
   container.style.cssText = [
@@ -106,27 +86,15 @@ export function createMeetTimePicker(
     'padding:10px 20px 8px',
     'border-radius:10px',
   ].join(';');
-  container.append(row, meetBtn, backBtn);
-
-  function fireChange(): void {
-    onTimeChange(readTime(hh, mm));
-  }
-
-  hh.addEventListener('input', fireChange);
-  mm.addEventListener('input', fireChange);
-
-  meetBtn.addEventListener('click', () => { onShare(readTime(hh, mm)); });
-  backBtn.addEventListener('click', () => {
-    onBack();
-    container.style.display = 'none';
-  });
+  container.append(drums, meetBtn, backBtn);
 
   return {
     element: container,
     show(): void {
       const d = new Date();
-      hh.value = String(d.getHours()).padStart(2, '0');
-      mm.value = String(d.getMinutes()).padStart(2, '0');
+      hCol.setValue(d.getHours());
+      mCol.setValue(d.getMinutes());
+      sCol.setValue(d.getSeconds());
       container.style.display = 'flex';
       fireChange();
     },
@@ -137,7 +105,7 @@ export function createMeetTimePicker(
 }
 
 export function createAnyTimeLink(onClick: () => void): HTMLElement {
-  const link = makeButton('SHARE ANY TIME', '0.35');
+  const link = makeLink('ANY TIME', '0.35');
   link.addEventListener('click', onClick);
   return link;
 }
