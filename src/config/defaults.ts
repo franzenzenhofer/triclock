@@ -106,6 +106,13 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
     darkGradientAlpha: 0.2,
     borderLineWidth: 2.5,
     shadowLineWidth: 2,
+    plasma: Object.freeze({
+      enabled: true,
+      alpha: 0.55,
+      speed: 0.8,
+      textureSize: 512,
+      blendMode: 'source-over' as GlobalCompositeOperation,
+    }),
   }),
   tips: Object.freeze({
     hours: Object.freeze({ radius: 6, glowRadiusRatio: 0.08 }),

@@ -16,6 +16,7 @@ export type {
   ScalesConfig,
   EdgeGradientPass,
   EdgeProgressConfig,
+  PlasmaConfig,
   TrianglesConfig,
   TipsConfig,
   EdgeLabelsConfig,

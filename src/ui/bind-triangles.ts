@@ -40,6 +40,28 @@ export function bindTriangles(
     mut.triangles.wedgeLayers = layers;
   }, onChange);
 
+  const plasmaParams: Record<string, unknown> = { ...config.triangles.plasma };
+  const plasmaBindings: BindingApi[] = [];
+  const plasmaFolder = folder.addFolder({ title: 'Plasma Effect' });
+  plasmaBindings.push(plasmaFolder.addBinding(plasmaParams, 'enabled').on('change', (ev) => {
+    mut.triangles.plasma = { ...config.triangles.plasma, enabled: ev.value as boolean };
+    onChange();
+  }));
+  plasmaBindings.push(plasmaFolder.addBinding(plasmaParams, 'alpha', { min: 0, max: 1, step: 0.01 }).on('change', (ev) => {
+    mut.triangles.plasma = { ...config.triangles.plasma, alpha: ev.value as number };
+    onChange();
+  }));
+  plasmaBindings.push(plasmaFolder.addBinding(plasmaParams, 'speed', { min: 0.1, max: 3, step: 0.1 }).on('change', (ev) => {
+    mut.triangles.plasma = { ...config.triangles.plasma, speed: ev.value as number };
+    onChange();
+  }));
+  plasmaBindings.push(plasmaFolder.addBinding(plasmaParams, 'blendMode', {
+    options: { lighter: 'lighter', screen: 'screen', overlay: 'overlay', 'color-dodge': 'color-dodge', 'source-over': 'source-over' },
+  }).on('change', (ev) => {
+    mut.triangles.plasma = { ...config.triangles.plasma, blendMode: ev.value as GlobalCompositeOperation };
+    onChange();
+  }));
+
   const misc: Record<string, unknown> = {
     hueStep: config.triangles.hueStep,
     shadowBlur: config.triangles.shadowBlur,
@@ -82,6 +104,14 @@ export function bindTriangles(
     plParams.borderAlpha = pl.borderAlpha;
     plParams.lightnessMultiplier = pl.lightnessMultiplier;
     plBindings.forEach((b) => { b.refresh(); });
+
+    const pc = config.triangles.plasma;
+    plasmaParams.enabled = pc.enabled;
+    plasmaParams.alpha = pc.alpha;
+    plasmaParams.speed = pc.speed;
+    plasmaParams.blendMode = pc.blendMode;
+    plasmaBindings.forEach((b) => { b.refresh(); });
+
     syncSector();
     syncCross();
     syncWedge();

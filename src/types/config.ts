@@ -76,6 +76,14 @@ export interface EdgeProgressConfig {
   readonly coreTailLength: number;
 }
 
+export interface PlasmaConfig {
+  readonly enabled: boolean;
+  readonly alpha: number;
+  readonly speed: number;
+  readonly textureSize: number;
+  readonly blendMode: GlobalCompositeOperation;
+}
+
 export interface TrianglesConfig {
   readonly sectorLayers: readonly TriangleLayerDef[];
   readonly crossLayers: readonly TriangleLayerDef[];
@@ -95,6 +103,7 @@ export interface TrianglesConfig {
   readonly darkGradientAlpha: number;
   readonly borderLineWidth: number;
   readonly shadowLineWidth: number;
+  readonly plasma: PlasmaConfig;
 }
 
 export interface TipsConfig {
