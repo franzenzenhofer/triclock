@@ -21,6 +21,9 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
     alpha: 0.3,
   }),
   hsl: Object.freeze({
+    hueSource: 'seconds' as const,
+    satSource: 'minutes' as const,
+    litSource: 'hours' as const,
     satBase: 80,
     satRange: 20,
     litBase: 45,

@@ -3,6 +3,9 @@ import { computeBaseHsl } from '../../src/color/compute-base-hsl.js';
 import type { HslConfig } from '../../src/types/config.js';
 
 const HSL_CONFIG: HslConfig = {
+  hueSource: 'seconds',
+  satSource: 'minutes',
+  litSource: 'hours',
   satBase: 90,
   satRange: 10,
   litBase: 55,

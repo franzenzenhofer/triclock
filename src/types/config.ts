@@ -26,7 +26,12 @@ export interface FrameLinesConfig {
   readonly alpha: number;
 }
 
+export type TimeSource = 'hours' | 'minutes' | 'seconds';
+
 export interface HslConfig {
+  readonly hueSource: TimeSource;
+  readonly satSource: TimeSource;
+  readonly litSource: TimeSource;
   readonly satBase: number;
   readonly satRange: number;
   readonly litBase: number;

@@ -11,6 +11,7 @@ export type {
   ColorsConfig,
   GeometryConfig,
   FrameLinesConfig,
+  TimeSource,
   HslConfig,
   ScalesConfig,
   EdgeGradientPass,

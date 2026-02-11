@@ -3,6 +3,9 @@ import { brightColor } from '../../src/color/bright-color.js';
 import type { HslConfig } from '../../src/types/config.js';
 
 const HSL_CONFIG: HslConfig = {
+  hueSource: 'seconds',
+  satSource: 'minutes',
+  litSource: 'hours',
   satBase: 90,
   satRange: 10,
   litBase: 55,
