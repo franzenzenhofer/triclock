@@ -1,5 +1,5 @@
 import type { CanvasState, TimeValues, TrichronoConfig } from './types/index.js';
-import { createConfig, loadHashConfig, saveConfig, updateHash } from './config/index.js';
+import { createConfig, loadHashConfig, loadHashMode, saveConfig, updateHash } from './config/index.js';
 import { setupCanvas, computeLayout, applyLayout } from './canvas/index.js';
 import type { LayoutInput } from './canvas/index.js';
 import { getCurrentTime } from './time/get-current-time.js';
@@ -12,10 +12,13 @@ import {
 } from './ui/index.js';
 
 const { canvas, ctx } = setupCanvas('c');
+const hashMode = loadHashMode();
 const hashOverrides = loadHashConfig();
 const config: TrichronoConfig = createConfig(hashOverrides);
 
-if (!hashOverrides) {
+if (hashMode) {
+  applyDisplayMode(config, hashMode);
+} else if (!hashOverrides) {
   const savedMode = loadSavedMode();
   if (savedMode) applyDisplayMode(config, savedMode);
 }

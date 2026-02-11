@@ -2,6 +2,10 @@ import type { TrichronoConfig } from '../types/index.js';
 import { DEFAULT_CONFIG } from './defaults.js';
 import { validateConfig } from './schema.js';
 import type { PartialConfig } from './schema.js';
+import { detectActiveMode, applyDisplayMode } from '../ui/display-modes.js';
+import type { DisplayModeName } from '../ui/display-modes.js';
+
+const MODE_NAMES: ReadonlySet<string> = new Set(['prism', 'pure', 'flux']);
 
 function diff(
   current: Record<string, unknown>,
@@ -34,19 +38,35 @@ function diff(
 }
 
 export function configToHash(config: TrichronoConfig): string {
+  const mode = detectActiveMode(config);
+  if (mode) {
+    const modeDefault = JSON.parse(JSON.stringify(DEFAULT_CONFIG)) as TrichronoConfig;
+    applyDisplayMode(modeDefault, mode);
+    const extraChanges = diff(
+      config as unknown as Record<string, unknown>,
+      modeDefault as unknown as Record<string, unknown>,
+    );
+    if (!extraChanges) return mode;
+  }
+
   const changes = diff(
     config as unknown as Record<string, unknown>,
     DEFAULT_CONFIG as unknown as Record<string, unknown>,
   );
   if (!changes) return '';
-  const json = JSON.stringify(changes);
-  return btoa(encodeURIComponent(json));
+  return btoa(encodeURIComponent(JSON.stringify(changes)));
+}
+
+export function loadHashMode(): DisplayModeName | null {
+  const hash = window.location.hash.slice(1);
+  if (MODE_NAMES.has(hash)) return hash as DisplayModeName;
+  return null;
 }
 
 export function loadHashConfig(): PartialConfig | null {
   try {
     const hash = window.location.hash.slice(1);
-    if (!hash) return null;
+    if (!hash || MODE_NAMES.has(hash)) return null;
     const json = decodeURIComponent(atob(hash));
     const parsed: unknown = JSON.parse(json);
     if (!validateConfig(parsed)) return null;
