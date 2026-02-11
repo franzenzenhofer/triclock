@@ -8,7 +8,7 @@ import {
   createPanel, setupKeybindings, createConfigToggleLink,
   createShareLink, createModeSelector, applyDisplayMode, loadSavedMode,
   createFullscreenToggle, createMeetTimePicker, createAnyTimeLink,
-  shareMeetImage,
+  shareMeetImage, createInstallButton,
 } from './ui/index.js';
 
 const { canvas, ctx } = setupCanvas('c');
@@ -65,6 +65,7 @@ applyLayout(canvas, ctx, state);
 setupKeybindings(panel);
 createFullscreenToggle(config);
 createConfigToggleLink(panel, config);
+createInstallButton(config);
 
 // Time override for "Share Any Time" feature
 let timeOverride: TimeValues | null = null;

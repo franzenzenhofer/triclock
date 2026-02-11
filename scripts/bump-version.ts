@@ -6,3 +6,8 @@ const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8')) as { version: string };
 const [major, minor, patch] = pkg.version.split('.').map(Number);
 pkg.version = `${String(major)}.${String(minor)}.${String(patch + 1)}`;
 writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+
+const swPath = resolve(import.meta.dirname, '..', 'public', 'sw.js');
+const sw = readFileSync(swPath, 'utf-8');
+const updated = sw.replace(/const CACHE = 'triclock-v[^']*'/, `const CACHE = 'triclock-v${pkg.version}'`);
+writeFileSync(swPath, updated);

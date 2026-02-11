@@ -10,3 +10,4 @@ export { createFullscreenToggle } from './fullscreen-toggle.js';
 export { createMeetTimePicker, createAnyTimeLink } from './meet-time-picker.js';
 export { shareMeetImage } from './share-meet.js';
 export type { DateSelection } from './date-selector.js';
+export { createInstallButton } from './install-button.js';
