@@ -1,6 +1,5 @@
 import type { TrichronoConfig } from '../types/index.js';
 import { asMutable } from './mutate-config.js';
-import { MODE_STORAGE_KEY } from '../constants.js';
 
 export type DisplayModeName = 'prism' | 'pure' | 'flux';
 
@@ -47,13 +46,3 @@ export function applyDisplayMode(config: TrichronoConfig, name: DisplayModeName)
   if (cross) mut.triangles.crossLayers = [{ ...cross, visible: mode.layers.cross }];
 }
 
-export function loadSavedMode(): DisplayModeName | null {
-  const stored = localStorage.getItem(MODE_STORAGE_KEY);
-  if (stored === 'wire') return 'pure';
-  if (stored === 'prism' || stored === 'pure' || stored === 'flux') return stored;
-  return null;
-}
-
-export function saveMode(name: DisplayModeName): void {
-  localStorage.setItem(MODE_STORAGE_KEY, name);
-}

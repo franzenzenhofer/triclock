@@ -1,5 +1,5 @@
 import type { CanvasState, TimeValues, TrichronoConfig } from './types/index.js';
-import { createConfig, loadHashConfig, loadHashMode, saveConfig, updateHash } from './config/index.js';
+import { createConfig, loadHashConfig, loadHashMode, updateHash } from './config/index.js';
 import { setupCanvas, computeLayout, applyLayout } from './canvas/index.js';
 import type { LayoutInput } from './canvas/index.js';
 import { getCurrentTime } from './time/get-current-time.js';
@@ -7,7 +7,7 @@ import { createLoop } from './animation/index.js';
 import { TOGGLE_PANEL_KEY } from './constants.js';
 import {
   createPanel, setupKeybindings, createConfigToggleLink,
-  createShareLink, createModeSelector, applyDisplayMode, loadSavedMode,
+  createShareLink, createModeSelector, applyDisplayMode,
   createFullscreenToggle, createMeetTimePicker, createAnyTimeLink,
   shareMeetImage, createInstallButton, startOnboarding,
 } from './ui/index.js';
@@ -18,17 +18,12 @@ const hashOverrides = loadHashConfig();
 const config: TrichronoConfig = createConfig(hashOverrides);
 
 const hasHash = !!hashMode || !!hashOverrides;
-const savedMode = loadSavedMode();
-const needsOnboarding = !hasHash && !savedMode;
+const needsOnboarding = !hasHash;
 
 if (hashMode) {
   applyDisplayMode(config, hashMode);
 } else if (!hashOverrides) {
-  if (needsOnboarding) {
-    applyDisplayMode(config, 'pure');
-  } else if (savedMode) {
-    applyDisplayMode(config, savedMode);
-  }
+  applyDisplayMode(config, 'pure');
 }
 
 const modeSelector = createModeSelector(config, handleUserConfigChange);
@@ -60,11 +55,11 @@ function handleResize(): void {
 const { pane: panel, syncTriangles } = createPanel(config, syncConfigUI);
 
 function syncConfigUI(): void {
-  saveConfig(config);
   handleResize();
   modeSelector.updateHighlight();
   syncTriangles();
   panel.refresh();
+  updateHash(config);
 }
 
 let cancelOnboarding: (() => void) | null = null;
@@ -72,6 +67,7 @@ let cancelOnboarding: (() => void) | null = null;
 function endOnboardingMode(): void {
   modeSelector.setOnboarding(false);
   modeSelector.updateHighlight();
+  updateHash(config);
 }
 
 function cancelOnboardingIfActive(): void {
@@ -82,11 +78,10 @@ function cancelOnboardingIfActive(): void {
   }
 }
 
-// Explicit user action: mode selector click → enable hash + sync + update hash.
+// Explicit user action: mode selector click → sync (which updates hash).
 function handleUserConfigChange(): void {
   cancelOnboardingIfActive();
   syncConfigUI();
-  updateHash(config);
 }
 
 window.addEventListener('resize', handleResize, { passive: true });

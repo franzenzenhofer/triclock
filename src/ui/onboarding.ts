@@ -1,5 +1,4 @@
 import type { DisplayModeName } from './display-modes.js';
-import { saveMode } from './display-modes.js';
 
 const SEQUENCE: readonly DisplayModeName[] = ['prism', 'pure', 'flux', 'pure'];
 const FADE_MS = 500;
@@ -18,7 +17,6 @@ export function startOnboarding(
 
   for (let i = 0; i < SEQUENCE.length; i++) {
     const mode = SEQUENCE[i] ?? 'pure';
-    const isLast = i === SEQUENCE.length - 1;
 
     timers.push(setTimeout(() => {
       if (cancelled) return;
@@ -30,7 +28,6 @@ export function startOnboarding(
       if (cancelled) return;
       applyMode(mode);
       canvas.style.opacity = '1';
-      if (isLast) saveMode(mode);
     }, t));
     t += HOLD_MS;
   }

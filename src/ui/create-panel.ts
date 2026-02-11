@@ -1,7 +1,6 @@
 import { Pane } from 'tweakpane';
 import type { TrichronoConfig } from '../types/index.js';
-import { STORAGE_KEY, EXPORT_FILENAME } from '../constants.js';
-import { configToHash } from '../config/hash.js';
+import { EXPORT_FILENAME } from '../constants.js';
 import { bindColors } from './bind-colors.js';
 import { bindGeometry } from './bind-geometry.js';
 import { bindFrameLines } from './bind-frame-lines.js';
@@ -72,13 +71,11 @@ export function createPanel(
   bindTips(glowLayers.addFolder({ title: 'Tips' }), config, onChange);
 
   pane.addButton({ title: 'Copy Share Link' }).on('click', () => {
-    const hash = configToHash(config);
-    const url = window.location.origin + window.location.pathname + (hash ? '#' + hash : '');
+    const url = window.location.origin + window.location.pathname;
     void navigator.clipboard.writeText(url);
   });
 
   pane.addButton({ title: 'Reset to Defaults' }).on('click', () => {
-    localStorage.removeItem(STORAGE_KEY);
     window.history.replaceState(null, '', window.location.pathname);
     window.location.reload();
   });

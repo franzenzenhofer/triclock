@@ -4,7 +4,6 @@ import {
   DISPLAY_MODES,
   detectActiveMode,
   applyDisplayMode,
-  saveMode,
 } from './display-modes.js';
 
 export interface ModeSelector {
@@ -43,7 +42,6 @@ export function createModeSelector(
     'cursor:pointer',
   ].join(';');
   header.addEventListener('click', () => {
-    localStorage.clear();
     window.history.replaceState(null, '', window.location.pathname);
     window.location.reload();
   });
@@ -97,7 +95,6 @@ export function createModeSelector(
     });
     btn.addEventListener('click', () => {
       applyDisplayMode(config, mode.name);
-      saveMode(mode.name);
       onChange();
       btn.style.opacity = '0.5';
       setTimeout(() => { highlight(); }, 120);

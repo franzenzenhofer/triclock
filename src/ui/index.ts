@@ -5,7 +5,7 @@ export { createConfigToggleLink } from './config-toggle-link.js';
 export { createShareLink } from './share-time.js';
 export { createModeSelector } from './mode-selector.js';
 export type { ModeSelector } from './mode-selector.js';
-export { applyDisplayMode, loadSavedMode } from './display-modes.js';
+export { applyDisplayMode } from './display-modes.js';
 export { createFullscreenToggle } from './fullscreen-toggle.js';
 export { createMeetTimePicker, createAnyTimeLink } from './meet-time-picker.js';
 export { shareMeetImage } from './share-meet.js';

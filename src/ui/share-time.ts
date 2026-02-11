@@ -1,7 +1,6 @@
 import type { TrichronoConfig, TimeValues } from '../types/index.js';
 import { getCurrentTime } from '../time/get-current-time.js';
 import { formatDigital } from '../time/format-digital.js';
-import { configToHash } from '../config/hash.js';
 import { computeLayout, applyLayout } from '../canvas/index.js';
 import type { LayoutInput } from '../canvas/index.js';
 import { renderFrame } from '../render/render-frame.js';
@@ -84,8 +83,7 @@ interface ShareClockInput {
 export async function shareClockImage(input: ShareClockInput): Promise<void> {
   const { canvas, config, time, title, prefix } = input;
   const timeStr = formatDigital(time, true);
-  const hash = configToHash(config);
-  const url = window.location.origin + window.location.pathname + (hash ? '#' + hash : '');
+  const url = window.location.origin + window.location.pathname;
   const text = title + '\n' + url;
   const filename = prefix + timeStr.replace(/:/g, '') + '.png';
 
