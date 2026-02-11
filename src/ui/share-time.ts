@@ -3,6 +3,7 @@ import { getCurrentTime } from '../time/get-current-time.js';
 import { formatDigital } from '../time/format-digital.js';
 import { configToHash } from '../config/hash.js';
 import { computeLayout, applyLayout } from '../canvas/index.js';
+import type { LayoutInput } from '../canvas/index.js';
 import { renderFrame } from '../render/render-frame.js';
 import { UI_FONT } from '../constants.js';
 
@@ -23,7 +24,14 @@ function renderShareCanvas(
   const full = document.createElement('canvas');
   const fullCtx = full.getContext('2d');
   if (!fullCtx) throw new Error('Failed to get 2d context for share canvas');
-  const state = computeLayout(w, h, finalDpr, config.geometry.sizeRatio);
+  const layoutInput: LayoutInput = {
+    w, h, dpr: finalDpr,
+    sizeRatio: config.geometry.sizeRatio,
+    botY: config.geometry.botY,
+    digitalYRatio: config.digitalTime.yOffsetRatio,
+    topInset: 0,
+  };
+  const state = computeLayout(layoutInput);
   applyLayout(full, fullCtx, state);
   renderFrame(fullCtx, state, getCurrentTime(), config);
 

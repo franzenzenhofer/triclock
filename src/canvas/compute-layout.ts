@@ -1,18 +1,21 @@
 import type { CanvasState } from '../types/index.js';
 
-const MAX_OFFSET = 35;
-const OFFSET_START_H = 500;
-const OFFSET_FULL_H = 850;
+export const MIN_DIGITAL_GAP = 50;
 
-export function computeLayout(w: number, h: number, dpr: number, sizeRatio: number): CanvasState {
-  const t = Math.max(0, Math.min(1, (h - OFFSET_START_H) / (OFFSET_FULL_H - OFFSET_START_H)));
-  const offset = MAX_OFFSET * t;
-  return {
-    W: w,
-    H: h,
-    cx: w / 2,
-    cy: h / 2 + offset,
-    size: Math.min(w, h) * sizeRatio,
-    dpr,
-  };
+export interface LayoutInput {
+  readonly w: number;
+  readonly h: number;
+  readonly dpr: number;
+  readonly sizeRatio: number;
+  readonly botY: number;
+  readonly digitalYRatio: number;
+  readonly topInset: number;
+}
+
+export function computeLayout(input: LayoutInput): CanvasState {
+  const { w, h, dpr, sizeRatio, botY, digitalYRatio, topInset } = input;
+  const size = Math.min(w, h) * sizeRatio;
+  const bottomExtent = Math.max(size * digitalYRatio, size * botY + MIN_DIGITAL_GAP);
+  const cy = (topInset + h + size - bottomExtent) / 2;
+  return { W: w, H: h, cx: w / 2, cy, size, dpr };
 }

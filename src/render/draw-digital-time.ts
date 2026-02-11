@@ -1,5 +1,6 @@
 import type { TimeValues, TrichronoConfig } from '../types/index.js';
 import { formatDigital } from '../time/format-digital.js';
+import { MIN_DIGITAL_GAP } from '../canvas/compute-layout.js';
 
 export function drawDigitalTime(
   ctx: CanvasRenderingContext2D,
@@ -15,7 +16,8 @@ export function drawDigitalTime(
   const fontSize = Math.max(dt.fontSizeMin, size * dt.fontSizeRatio);
   const font = String(dt.fontWeight) + ' ' + String(fontSize) + 'px ' + dt.fontFamily;
   const x = cx + size * dt.xOffsetRatio;
-  const y = cy + size * dt.yOffsetRatio;
+  const triBottom = cy + size * config.geometry.botY;
+  const y = Math.max(cy + size * dt.yOffsetRatio, triBottom + MIN_DIGITAL_GAP);
   const text = formatDigital(time, dt.showSeconds);
 
   ctx.save();
