@@ -1,7 +1,7 @@
 import type { CanvasState, TimeValues, TrichronoConfig } from './types/index.js';
 import { createConfig, loadHashConfig, loadHashMode, loadHashParams, updateHash } from './config/index.js';
 import { asMutable } from './ui/mutate-config.js';
-import { setupCanvas, computeLayout, applyLayout } from './canvas/index.js';
+import { setupCanvas, computeLayout, applyLayout, MIN_DIGITAL_GAP } from './canvas/index.js';
 import type { LayoutInput } from './canvas/index.js';
 import { getCurrentTime } from './time/get-current-time.js';
 import { createLoop } from './animation/index.js';
@@ -161,6 +161,34 @@ if (needsOnboarding) {
 }
 
 (window as unknown as Record<string, unknown>).__triclockDebug = (): void => { dumpState(getTime(), config); };
+
+function digitalTimeHitTest(clientX: number, clientY: number): boolean {
+  const dt = config.digitalTime;
+  const { cx, cy, size } = state;
+  const fontSize = Math.max(dt.fontSizeMin, size * dt.fontSizeRatio);
+  const x = cx + size * dt.xOffsetRatio;
+  const triBottom = cy + size * config.geometry.botY;
+  const y = Math.max(cy + size * dt.yOffsetRatio, triBottom + MIN_DIGITAL_GAP);
+  const halfW = fontSize * 2.5;
+  const halfH = fontSize * 0.7;
+  return Math.abs(clientX - x) < halfW && Math.abs(clientY - y) < halfH;
+}
+
+function handleDigitalTimeToggle(clientX: number, clientY: number): void {
+  if (!digitalTimeHitTest(clientX, clientY)) return;
+  const mut = asMutable(config);
+  mut.digitalTime.visible = !config.digitalTime.visible;
+  syncConfigUI();
+}
+
+canvas.addEventListener('click', (e) => {
+  handleDigitalTimeToggle(e.clientX, e.clientY);
+});
+canvas.addEventListener('touchend', (e) => {
+  const t = e.changedTouches[0];
+  if (!t) return;
+  handleDigitalTimeToggle(t.clientX, t.clientY);
+}, { passive: true });
 
 const loop = createLoop(ctx, () => state, () => config, getTime);
 loop.start();

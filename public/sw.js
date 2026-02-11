@@ -1,7 +1,7 @@
 /* eslint-disable */
 // TRICLOCK Service Worker — Network-first, offline shell only
 // Version updated by build script
-const CACHE = 'triclock-v1.0.114';
+const CACHE = 'triclock-v1.0.116';
 const SHELL = ['/'];
 
 self.addEventListener('install', function (e) {
