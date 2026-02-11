@@ -1,15 +1,17 @@
 import type { CanvasState } from '../types/index.js';
 
-const TOP_RESERVE = 120;
-const BOTTOM_RESERVE = 50;
+const MAX_OFFSET = 35;
+const OFFSET_START_H = 500;
+const OFFSET_FULL_H = 850;
 
 export function computeLayout(w: number, h: number, dpr: number, sizeRatio: number): CanvasState {
-  const availableCy = (TOP_RESERVE + h - BOTTOM_RESERVE) / 2;
+  const t = Math.max(0, Math.min(1, (h - OFFSET_START_H) / (OFFSET_FULL_H - OFFSET_START_H)));
+  const offset = MAX_OFFSET * t;
   return {
     W: w,
     H: h,
     cx: w / 2,
-    cy: Math.max(h / 2, availableCy),
+    cy: h / 2 + offset,
     size: Math.min(w, h) * sizeRatio,
     dpr,
   };
