@@ -49,6 +49,7 @@ export function createMeetTimePicker(
 ): MeetTimePicker {
   const now = new Date();
   let expanded = true;
+  let justOpened = false;
 
   function fireChange(): void {
     onTimeChange(readTime());
@@ -127,6 +128,7 @@ export function createMeetTimePicker(
 
   // Click outside → minimize
   document.addEventListener('click', (e) => {
+    if (justOpened) return;
     if (container.style.display === 'none') return;
     if (!expanded) return;
     if (container.contains(e.target as Node)) return;
@@ -145,6 +147,8 @@ export function createMeetTimePicker(
       dateSelector.reset();
       setExpanded(true);
       container.style.display = 'flex';
+      justOpened = true;
+      requestAnimationFrame(() => { justOpened = false; });
       fireChange();
     },
     hide(): void {
