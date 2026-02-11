@@ -1,12 +1,14 @@
-import type { CanvasState, TrichronoConfig } from './types/index.js';
+import type { CanvasState, TimeValues, TrichronoConfig } from './types/index.js';
 import { createConfig, loadHashConfig, saveConfig, updateHash } from './config/index.js';
 import { setupCanvas, computeLayout, applyLayout } from './canvas/index.js';
 import type { LayoutInput } from './canvas/index.js';
+import { getCurrentTime } from './time/get-current-time.js';
 import { createLoop } from './animation/index.js';
 import {
   createPanel, setupKeybindings, createConfigToggleLink,
   createShareLink, createModeSelector, applyDisplayMode, loadSavedMode,
-  createFullscreenToggle,
+  createFullscreenToggle, createMeetTimePicker, createAnyTimeLink,
+  shareMeetImage,
 } from './ui/index.js';
 
 const { canvas, ctx } = setupCanvas('c');
@@ -60,7 +62,40 @@ applyLayout(canvas, ctx, state);
 setupKeybindings(panel);
 createFullscreenToggle(config);
 createConfigToggleLink(panel, config);
-createShareLink(canvas, config);
 
-const loop = createLoop(ctx, () => state, () => config);
+// Time override for "Share Any Time" feature
+let timeOverride: TimeValues | null = null;
+const getTime = (): TimeValues => timeOverride ?? getCurrentTime();
+
+// Share links wrapper
+const shareWrap = document.createElement('div');
+shareWrap.style.cssText = [
+  'position:fixed',
+  'bottom:16px',
+  'left:50%',
+  'transform:translateX(-50%)',
+  'z-index:100',
+  'display:flex',
+  'flex-direction:column',
+  'align-items:center',
+  'gap:4px',
+].join(';');
+
+const shareLink = createShareLink(canvas, config);
+const anyTimeLink = createAnyTimeLink(() => {
+  shareWrap.style.display = 'none';
+  meetPicker.show();
+});
+shareWrap.append(shareLink, anyTimeLink);
+document.body.appendChild(shareWrap);
+
+// Meet time picker
+const meetPicker = createMeetTimePicker(
+  (time) => { timeOverride = time; },
+  (time) => { void shareMeetImage(canvas, config, time); },
+  () => { timeOverride = null; shareWrap.style.display = 'flex'; },
+);
+document.body.appendChild(meetPicker.element);
+
+const loop = createLoop(ctx, () => state, () => config, getTime);
 loop.start();

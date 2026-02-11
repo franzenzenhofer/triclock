@@ -1,4 +1,4 @@
-import type { TrichronoConfig } from '../types/index.js';
+import type { TrichronoConfig, TimeValues } from '../types/index.js';
 import { getCurrentTime } from '../time/get-current-time.js';
 import { formatDigital } from '../time/format-digital.js';
 import { configToHash } from '../config/hash.js';
@@ -6,13 +6,15 @@ import { computeLayout, applyLayout } from '../canvas/index.js';
 import type { LayoutInput } from '../canvas/index.js';
 import { renderFrame } from '../render/render-frame.js';
 import { UI_FONT } from '../constants.js';
+import { canvasToBlob, shareOrDownload } from './share-utils.js';
 
 const MAX_DIM = 4096;
 const CROP_PAD = 0.25;
 
-function renderShareCanvas(
+export function renderShareCanvas(
   source: HTMLCanvasElement,
   config: TrichronoConfig,
+  time: TimeValues,
 ): HTMLCanvasElement {
   const w = source.clientWidth;
   const h = source.clientHeight;
@@ -33,7 +35,7 @@ function renderShareCanvas(
   };
   const state = computeLayout(layoutInput);
   applyLayout(full, fullCtx, state);
-  renderFrame(fullCtx, state, getCurrentTime(), config);
+  renderFrame(fullCtx, state, time, config);
 
   return cropToClockRegion(full, state, config, finalDpr);
 }
@@ -67,31 +69,6 @@ function cropToClockRegion(
   return out;
 }
 
-function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (blob) resolve(blob);
-      else reject(new Error('Canvas toBlob failed'));
-    }, 'image/png');
-  });
-}
-
-function canNativeShare(file: File): boolean {
-  try {
-    return typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] });
-  } catch {
-    return false;
-  }
-}
-
-function downloadBlob(blob: Blob, filename: string): void {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
 async function shareImage(
   canvas: HTMLCanvasElement,
   config: TrichronoConfig,
@@ -104,20 +81,9 @@ async function shareImage(
   const text = title + '\n' + url;
   const filename = 'triclock-' + timeStr.replace(/:/g, '') + '.png';
 
-  const shareCanvas = renderShareCanvas(canvas, config);
+  const shareCanvas = renderShareCanvas(canvas, config, time);
   const blob = await canvasToBlob(shareCanvas);
-  const file = new File([blob], filename, { type: 'image/png' });
-
-  if (canNativeShare(file)) {
-    try {
-      await navigator.share({ title, text, files: [file] });
-    } catch (err: unknown) {
-      if (err instanceof Error && err.name === 'AbortError') return;
-      downloadBlob(blob, filename);
-    }
-  } else {
-    downloadBlob(blob, filename);
-  }
+  await shareOrDownload(blob, filename, title, text);
 }
 
 export function createShareLink(
@@ -127,10 +93,6 @@ export function createShareLink(
   const link = document.createElement('div');
   link.textContent = 'SHARE YOUR TIME';
   link.style.cssText = [
-    'position:fixed',
-    'bottom:16px',
-    'left:50%',
-    'transform:translateX(-50%)',
     'cursor:pointer',
     'font-family:' + UI_FONT,
     'font-weight:500',
@@ -139,7 +101,6 @@ export function createShareLink(
     'letter-spacing:0.12em',
     'color:#e0e0e8',
     'opacity:0.35',
-    'z-index:100',
     'user-select:none',
     'border-bottom:1px solid rgba(224,224,232,0.15)',
     'padding-bottom:2px',
@@ -149,6 +110,5 @@ export function createShareLink(
   link.addEventListener('mouseenter', () => { link.style.opacity = '0.6'; });
   link.addEventListener('mouseleave', () => { link.style.opacity = '0.35'; });
   link.addEventListener('click', () => { void shareImage(canvas, config); });
-  document.body.appendChild(link);
   return link;
 }

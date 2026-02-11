@@ -1,5 +1,4 @@
-import type { CanvasState, TrichronoConfig } from '../types/index.js';
-import { getCurrentTime } from '../time/get-current-time.js';
+import type { CanvasState, TimeValues, TrichronoConfig } from '../types/index.js';
 import { renderFrame } from '../render/render-frame.js';
 
 export interface AnimationLoop {
@@ -11,11 +10,12 @@ export function createLoop(
   ctx: CanvasRenderingContext2D,
   getState: () => CanvasState,
   getConfig: () => TrichronoConfig,
+  getTime: () => TimeValues,
 ): AnimationLoop {
   let rafId = 0;
 
   function tick(): void {
-    renderFrame(ctx, getState(), getCurrentTime(), getConfig());
+    renderFrame(ctx, getState(), getTime(), getConfig());
     rafId = requestAnimationFrame(tick);
   }
 
