@@ -19,7 +19,7 @@ export function createModeSelector(
   const wrapper = document.createElement('div');
   wrapper.style.cssText = [
     'position:fixed',
-    'top:clamp(12px, 2.5vh, 24px)',
+    'top:clamp(8px, 1.5vh, 16px)',
     'left:50%',
     'transform:translateX(-50%)',
     'z-index:100',
@@ -27,21 +27,19 @@ export function createModeSelector(
     'display:flex',
     'flex-direction:column',
     'align-items:center',
-    'gap:clamp(6px, 1.2vh, 12px)',
+    'gap:clamp(2px, 0.5vh, 5px)',
   ].join(';');
 
   const header = document.createElement('div');
   header.textContent = 'TRICLOCK';
   header.style.cssText = [
     'font-family:' + UI_FONT,
-    'font-size:clamp(13px, 1.8vw, 20px)',
+    'font-size:clamp(11px, 1.5vw, 16px)',
     'font-weight:600',
-    'letter-spacing:0.4em',
+    'letter-spacing:0.35em',
     'color:#e0e0e8',
     'opacity:0.4',
   ].join(';');
-  wrapper.appendChild(header);
-
   const nav = document.createElement('nav');
   nav.style.cssText = [
     'display:flex',
@@ -49,6 +47,7 @@ export function createModeSelector(
     'gap:0',
   ].join(';');
   wrapper.appendChild(nav);
+  wrapper.appendChild(header);
 
   const buttons: HTMLButtonElement[] = [];
 
@@ -59,8 +58,8 @@ export function createModeSelector(
       dot.style.cssText = [
         'color:#e0e0e8',
         'opacity:0.12',
-        'font-size:14px',
-        'padding:0 10px',
+        'font-size:12px',
+        'padding:0 8px',
         'pointer-events:none',
       ].join(';');
       nav.appendChild(dot);
@@ -72,28 +71,28 @@ export function createModeSelector(
       'background:none',
       'border:none',
       'cursor:pointer',
-      'padding:4px 8px',
+      'padding:2px 6px',
       'font-family:' + UI_FONT,
-      'font-size:clamp(9px, 1.1vw, 12px)',
+      'font-size:clamp(8px, 1vw, 11px)',
       'font-weight:400',
       'text-transform:uppercase',
       'letter-spacing:0.18em',
       'color:#e0e0e8',
-      'opacity:0.2',
+      'opacity:0.18',
       'transition:opacity 0.25s ease',
     ].join(';');
 
     btn.addEventListener('mouseenter', () => {
-      if (btn.style.fontWeight !== '600') btn.style.opacity = '0.5';
+      if (btn.style.fontWeight !== '400' || btn.style.opacity === '0.18') btn.style.opacity = '0.3';
     });
     btn.addEventListener('mouseleave', () => {
-      btn.style.opacity = btn.style.fontWeight === '600' ? '0.6' : '0.2';
+      highlight();
     });
     btn.addEventListener('click', () => {
       applyDisplayMode(config, mode.name);
       saveMode(mode.name);
       onChange();
-      btn.style.opacity = '1';
+      btn.style.opacity = '0.5';
       setTimeout(() => { highlight(); }, 120);
     });
 
@@ -107,8 +106,8 @@ export function createModeSelector(
       const btn = buttons[i];
       if (!btn) return;
       const isActive = mode.name === active;
-      btn.style.fontWeight = isActive ? '600' : '400';
-      btn.style.opacity = isActive ? '0.6' : '0.2';
+      btn.style.fontWeight = '400';
+      btn.style.opacity = isActive ? '0.35' : '0.18';
     });
   }
 

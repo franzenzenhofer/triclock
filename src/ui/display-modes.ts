@@ -2,7 +2,7 @@ import type { TrichronoConfig } from '../types/index.js';
 import { asMutable } from './mutate-config.js';
 import { MODE_STORAGE_KEY } from '../constants.js';
 
-export type DisplayModeName = 'wire' | 'prism' | 'flux';
+export type DisplayModeName = 'prism' | 'pure' | 'flux';
 
 interface LayerVisibility {
   readonly wedge: boolean;
@@ -17,8 +17,8 @@ interface DisplayMode {
 }
 
 export const DISPLAY_MODES: readonly DisplayMode[] = [
-  { name: 'wire', label: 'WIRE', layers: { wedge: false, primary: true, cross: false } },
   { name: 'prism', label: 'PRISM', layers: { wedge: true, primary: true, cross: false } },
+  { name: 'pure', label: 'PURE', layers: { wedge: false, primary: true, cross: false } },
   { name: 'flux', label: 'FLUX', layers: { wedge: true, primary: true, cross: true } },
 ] as const;
 
@@ -49,7 +49,8 @@ export function applyDisplayMode(config: TrichronoConfig, name: DisplayModeName)
 
 export function loadSavedMode(): DisplayModeName | null {
   const stored = localStorage.getItem(MODE_STORAGE_KEY);
-  if (stored === 'wire' || stored === 'prism' || stored === 'flux') return stored;
+  if (stored === 'wire') return 'pure';
+  if (stored === 'prism' || stored === 'pure' || stored === 'flux') return stored;
   return null;
 }
 
