@@ -87,28 +87,60 @@ export function createDrumColumn(
     select(selected + steps);
   }, { passive: false });
 
-  // Touch drag
+  // Drag (shared by touch and mouse)
   let dragY = 0;
   let dragBase = 0;
+
+  function startDrag(clientY: number): void {
+    track.style.transition = 'none';
+    dragY = clientY;
+    dragBase = offset;
+  }
+
+  function moveDrag(clientY: number): void {
+    offset = dragBase + (clientY - dragY);
+    applyOffset();
+  }
+
+  function endDrag(): void {
+    track.style.transition = 'transform .15s ease-out';
+    select(Math.round(-offset / ITEM_H));
+  }
+
+  // Touch drag
   container.addEventListener('touchstart', (e) => {
     const touch = e.touches[0];
     if (!touch) return;
-    track.style.transition = 'none';
-    dragY = touch.clientY;
-    dragBase = offset;
+    startDrag(touch.clientY);
   }, { passive: true });
 
   container.addEventListener('touchmove', (e) => {
     const touch = e.touches[0];
     if (!touch) return;
     e.preventDefault();
-    offset = dragBase + (touch.clientY - dragY);
-    applyOffset();
+    moveDrag(touch.clientY);
   }, { passive: false });
 
-  container.addEventListener('touchend', () => {
-    track.style.transition = 'transform .15s ease-out';
-    select(Math.round(-offset / ITEM_H));
+  container.addEventListener('touchend', endDrag);
+
+  // Mouse drag
+  let mouseDown = false;
+  container.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    mouseDown = true;
+    startDrag(e.clientY);
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!mouseDown) return;
+    e.preventDefault();
+    moveDrag(e.clientY);
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!mouseDown) return;
+    mouseDown = false;
+    endDrag();
   });
 
   applyOffset();

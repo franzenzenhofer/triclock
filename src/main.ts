@@ -95,7 +95,7 @@ document.body.appendChild(shareWrap);
 const meetPicker = createMeetTimePicker(
   (time) => { timeOverride = time; },
   (time) => { void shareMeetImage(canvas, config, time); },
-  () => { timeOverride = null; shareWrap.style.display = ''; },
+  () => { timeOverride = null; shareWrap.style.display = 'flex'; },
 );
 document.body.appendChild(meetPicker.element);
 

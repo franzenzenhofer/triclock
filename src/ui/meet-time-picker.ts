@@ -82,7 +82,7 @@ export function createMeetTimePicker(
     'flex-direction:column',
     'align-items:center',
     'gap:8px',
-    'background:rgba(11,11,18,0.92)',
+    'background:rgba(11,11,18,0.7)',
     'padding:10px 20px 8px',
     'border-radius:10px',
   ].join(';');
