@@ -1,7 +1,7 @@
 {
-  "name": "TRICLOCK — Triangle Clock",
+  "name": "TRICLOCK — Triangular Clock",
   "short_name": "TRICLOCK",
-  "description": "A triangle clock that maps time to color",
+  "description": "A triangular clock that maps time to color",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0b0b12",
