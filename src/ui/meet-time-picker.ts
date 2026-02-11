@@ -72,19 +72,28 @@ export function createMeetTimePicker(
   const meetBtn = makeLink("LET'S MEET \u2192", '0.5');
   const backBtn = makeLink('\u2190 BACK TO NOW', '0.35');
 
-  // Minimized summary — shows time, tap to expand
+  // Minimized summary — looks like picker condensed to one line
   const summary = document.createElement('div');
   summary.style.cssText = [
     'cursor:pointer',
     'font-family:' + UI_FONT,
-    'font-size:clamp(12px, 2vw, 18px)',
-    'color:#e0e0e8;opacity:0.4',
+    'font-size:22px',
+    'color:#e0e0e8;opacity:0.5',
     'user-select:none;display:none',
-    'padding:2px 8px',
+    'padding:4px 8px',
+    'letter-spacing:0.04em',
+    'text-align:center',
+    'transition:opacity 0.25s ease',
   ].join(';');
+  summary.addEventListener('mouseenter', () => { summary.style.opacity = '0.7'; });
+  summary.addEventListener('mouseleave', () => { summary.style.opacity = '0.5'; });
 
   function updateSummary(): void {
-    summary.textContent = formatDigital(readTime(), false);
+    const t = readTime();
+    const date = dateSelector.getSelection();
+    const timeStr = formatDigital(t, false);
+    const label = date.label === 'today' ? '' : date.label.toUpperCase() + ' ';
+    summary.textContent = label + timeStr;
   }
 
   // Full content wrapper for easy show/hide
