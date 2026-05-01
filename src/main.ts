@@ -175,19 +175,21 @@ function toggleDigitalTime(): void {
 }
 
 // Double-tap / double-click on the canvas toggles the digital time.
+// Single taps do nothing - the user might just be admiring the clock.
+// Use one unified pointer-based double-tap detector so touch and mouse
+// don't both fire (which would no-op via two toggles).
 const DOUBLE_TAP_MS = 350;
-let lastTap = 0;
-function handleDoubleTap(): void {
+let lastTapAt = 0;
+canvas.addEventListener('pointerup', (event) => {
+  if (event.pointerType === 'mouse' && event.button !== 0) return;
   const now = performance.now();
-  if (now - lastTap < DOUBLE_TAP_MS) {
+  if (now - lastTapAt < DOUBLE_TAP_MS) {
     toggleDigitalTime();
-    lastTap = 0;
+    lastTapAt = 0;
     return;
   }
-  lastTap = now;
-}
-canvas.addEventListener('dblclick', toggleDigitalTime);
-canvas.addEventListener('touchend', handleDoubleTap);
+  lastTapAt = now;
+});
 
 const loop = createLoop(ctx, () => state, () => config, getTime);
 loop.start();
