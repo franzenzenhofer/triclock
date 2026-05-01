@@ -1,6 +1,7 @@
 import type { Point, TrichronoConfig, TriangleLayerDef } from '../types/index.js';
 import type { BaseHsl } from '../color/compute-base-hsl.js';
 import { drawColorTriangle } from './draw-color-triangle.js';
+import { computePlasmaPhase } from './compute-plasma-phase.js';
 import { HUE_FULL_CIRCLE } from '../constants.js';
 
 export function drawLayerGroup(
@@ -19,6 +20,7 @@ export function drawLayerGroup(
       const trio = trios[i];
       if (!trio) continue;
       const hue = (base.h + layer.hueOffset + hueStep * i) % HUE_FULL_CIRCLE;
+      const plasmaPhase = computePlasmaPhase(layer.hueOffset, hueStep, i);
       drawColorTriangle(
         ctx, trio[0], trio[1], trio[2],
         hue, base.s, base.l * layer.lightnessMultiplier,
@@ -26,6 +28,7 @@ export function drawLayerGroup(
         config.hsl,
         noShadow,
         size,
+        plasmaPhase,
       );
     }
   }

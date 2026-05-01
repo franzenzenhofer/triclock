@@ -2,6 +2,7 @@ import type { Point, TriangleVertices, TrichronoConfig } from '../types/index.js
 import type { BaseHsl } from '../color/compute-base-hsl.js';
 import { drawColorTriangle } from './draw-color-triangle.js';
 import { drawLayerGroup } from './draw-layer-group.js';
+import { computePlasmaPhase } from './compute-plasma-phase.js';
 import { lineIntersect } from '../math/line-intersect.js';
 
 interface TipPoints {
@@ -58,6 +59,7 @@ export function drawTriangleLayers(
       config.hsl,
       tc,
       size,
+      computePlasmaPhase(pl.hueOffset, step, 0),
     );
   }
 

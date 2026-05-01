@@ -19,6 +19,7 @@ export function drawColorTriangle(
   hslConfig: HslConfig,
   tc: TrianglesConfig,
   size: number,
+  plasmaPhase: number,
 ): void {
   const main = hslToHex(hue, sat, lit);
   const bright = brightColor(hue, lit, hslConfig);
@@ -36,7 +37,7 @@ export function drawColorTriangle(
     const pr = getPlasmaRenderer(tc.plasma.textureSize);
     if (pr) {
       const [r, g, b] = hslToRgb01(hue, sat, lit);
-      pr.render(performance.now() / 1000 * tc.plasma.speed, r, g, b, hue / 60);
+      pr.render(performance.now() / 1000 * tc.plasma.speed, r, g, b, plasmaPhase);
       ctx.clip();
       const minX = Math.min(p1.x, p2.x, p3.x);
       const minY = Math.min(p1.y, p2.y, p3.y);
