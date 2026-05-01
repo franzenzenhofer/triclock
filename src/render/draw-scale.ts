@@ -28,14 +28,17 @@ export function drawScale(params: DrawScaleParams): void {
     const isMajor = i % majorEvery === 0;
     const isActive = i <= activeCount;
 
-    const tickLen = isMajor ? size * sc.majorTickRatio : size * sc.minorTickRatio;
+    const isMid = !isMajor && count === 60 && i % 5 === 0;
+    const tickLen = isMajor ? size * sc.majorTickRatio
+      : isMid ? size * (sc.minorTickRatio + sc.majorTickRatio) * 0.5
+      : size * sc.minorTickRatio;
     const inner = { x: p.x + n.x * offset, y: p.y + n.y * offset };
     const outer = { x: p.x + n.x * (offset + tickLen), y: p.y + n.y * (offset + tickLen) };
 
     drawLine(
       ctx, inner, outer,
       isActive ? color : config.colors.inactive,
-      isMajor ? sc.majorWidth : sc.minorWidth,
+      isMajor ? sc.majorWidth : isMid ? (sc.minorWidth + sc.majorWidth) * 0.5 : sc.minorWidth,
       isActive ? sc.activeAlpha : sc.inactiveAlpha,
     );
 

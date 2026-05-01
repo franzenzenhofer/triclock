@@ -17,7 +17,7 @@ const ITEM_STYLE = [
   'height:' + String(ITEM_H) + 'px',
   'display:flex;align-items:center;justify-content:center',
   'font-family:' + UI_FONT,
-  'font-size:22px;color:#e0e0e8;user-select:none',
+  'font-size:22px;color:#e5e5eb;user-select:none',
 ].join(';');
 
 function mod(n: number, m: number): number {

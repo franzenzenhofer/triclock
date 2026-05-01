@@ -27,7 +27,7 @@ function formatDatePrefix(date: Date): string {
 function makeDot(): HTMLElement {
   const s = document.createElement('span');
   s.textContent = '\u00B7';
-  s.style.cssText = 'color:#e0e0e8;opacity:0.12;font-size:12px;padding:0 8px;pointer-events:none';
+  s.style.cssText = 'color:#e5e5eb;opacity:0.12;font-size:12px;padding:0 8px;pointer-events:none';
   return s;
 }
 
@@ -40,7 +40,7 @@ export function createDateSelector(): DateSelector {
     'font-family:' + UI_FONT,
     'font-size:clamp(8px, 1vw, 11px)',
     'text-transform:uppercase;letter-spacing:0.18em',
-    'color:#e0e0e8;user-select:none',
+    'color:#e5e5eb;user-select:none',
     'transition:opacity 0.25s ease',
   ].join(';');
 
