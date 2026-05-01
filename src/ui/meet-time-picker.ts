@@ -22,7 +22,7 @@ function makeLink(label: string, opacity: string): HTMLDivElement {
     'font-size:clamp(8px, 1.1vw, 12px)',
     'text-transform:uppercase',
     'letter-spacing:0.12em',
-    'color:#e0e0e8',
+    'color:#e5e5eb',
     'opacity:' + opacity,
     'user-select:none',
     'border-bottom:1px solid rgba(224,224,232,0.15)',
@@ -38,7 +38,7 @@ function makeLink(label: string, opacity: string): HTMLDivElement {
 function makeSep(): HTMLElement {
   const s = document.createElement('span');
   s.textContent = ':';
-  s.style.cssText = 'font-family:' + UI_FONT + ';font-size:22px;color:#e0e0e8;opacity:0.4;user-select:none';
+  s.style.cssText = 'font-family:' + UI_FONT + ';font-size:22px;color:#e5e5eb;opacity:0.4;user-select:none';
   return s;
 }
 
@@ -81,7 +81,7 @@ export function createMeetTimePicker(
       'height:36px',
       'display:flex;align-items:center;justify-content:center',
       'font-family:' + UI_FONT,
-      'font-size:22px;color:#e0e0e8;user-select:none',
+      'font-size:22px;color:#e5e5eb;user-select:none',
       'border-top:1px solid rgba(224,224,232,.2)',
       'border-bottom:1px solid rgba(224,224,232,.2)',
     ].join(';');
@@ -128,7 +128,7 @@ export function createMeetTimePicker(
   const container = document.createElement('div');
   container.style.cssText = [
     'position:fixed',
-    'bottom:12px',
+    'bottom:max(12px, env(safe-area-inset-bottom))',
     'left:50%',
     'transform:translateX(-50%)',
     'z-index:100',

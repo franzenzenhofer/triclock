@@ -34,8 +34,8 @@ export function createConfigToggleLink(
   link.appendChild(svg);
   link.style.cssText = [
     'position:fixed',
-    'bottom:10px',
-    'right:10px',
+    'bottom:max(10px, env(safe-area-inset-bottom))',
+    'right:max(10px, env(safe-area-inset-right))',
     'cursor:pointer',
     'color:' + dt.color,
     'opacity:0.15',

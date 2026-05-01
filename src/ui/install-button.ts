@@ -32,11 +32,11 @@ function supportsFullscreen(): boolean {
 export function createInstallButton(config: TrichronoConfig): HTMLElement {
   const btn = document.createElement('div');
   btn.appendChild(createDownloadSvg());
-  const rightPos = supportsFullscreen() ? '70px' : '40px';
+  const rightOffset = supportsFullscreen() ? '60px' : '30px';
   btn.style.cssText = [
     'position:fixed',
-    'bottom:10px',
-    'right:' + rightPos,
+    'bottom:max(10px, env(safe-area-inset-bottom))',
+    'right:calc(max(10px, env(safe-area-inset-right)) + ' + rightOffset + ')',
     'cursor:pointer',
     'color:' + config.digitalTime.color,
     'opacity:0.15',

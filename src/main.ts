@@ -1,7 +1,7 @@
 import type { CanvasState, TimeValues, TrichronoConfig } from './types/index.js';
 import { createConfig, loadHashConfig, loadHashMode, loadHashParams, updateHash } from './config/index.js';
 import { asMutable } from './ui/mutate-config.js';
-import { setupCanvas, computeLayout, applyLayout, MIN_DIGITAL_GAP } from './canvas/index.js';
+import { setupCanvas, computeLayout, applyLayout } from './canvas/index.js';
 import type { LayoutInput } from './canvas/index.js';
 import { getCurrentTime } from './time/get-current-time.js';
 import { createLoop } from './animation/index.js';
@@ -29,6 +29,12 @@ if (!hashParams.plasma) {
 
 const hasHash = !!hashMode || !!hashOverrides;
 const needsOnboarding = !hasHash;
+
+// Returning visitors: digital time hidden by default
+if (hasHash) {
+  const mut = asMutable(config);
+  mut.digitalTime.visible = false;
+}
 
 if (hashMode) {
   applyDisplayMode(config, hashMode);
@@ -74,6 +80,21 @@ function syncConfigUI(): void {
 
 let cancelOnboarding: (() => void) | null = null;
 
+function fadeOutDigitalTime(): void {
+  const mut = asMutable(config);
+  const startAlpha = config.digitalTime.alpha;
+  const start = performance.now();
+  const duration = 500;
+  function step(now: number): void {
+    const t = Math.min(1, (now - start) / duration);
+    mut.digitalTime.alpha = startAlpha * (1 - t);
+    if (t < 1) { requestAnimationFrame(step); return; }
+    mut.digitalTime.visible = false;
+    mut.digitalTime.alpha = startAlpha;
+  }
+  requestAnimationFrame(step);
+}
+
 function endOnboardingMode(): void {
   modeSelector.setOnboarding(false);
   modeSelector.updateHighlight();
@@ -114,7 +135,7 @@ const getTime = (): TimeValues => timeOverride ?? getCurrentTime();
 const shareWrap = document.createElement('div');
 shareWrap.style.cssText = [
   'position:fixed',
-  'bottom:16px',
+  'bottom:max(16px, env(safe-area-inset-bottom))',
   'left:50%',
   'transform:translateX(-50%)',
   'z-index:100',
@@ -126,7 +147,7 @@ shareWrap.style.cssText = [
 const shareLink = createShareLink(canvas, config);
 const dot = document.createElement('span');
 dot.textContent = '\u00b7';
-dot.style.cssText = 'color:#e0e0e8;opacity:0.25;user-select:none;font-size:12px';
+dot.style.cssText = 'color:#e5e5eb;opacity:0.25;user-select:none;font-size:12px';
 const anyTimeLink = createAnyTimeLink(() => {
   shareWrap.style.display = 'none';
   meetPicker.show();
@@ -156,41 +177,27 @@ if (needsOnboarding) {
       panel.refresh();
     },
     endOnboardingMode,
+    fadeOutDigitalTime,
   );
   cancelOnboarding = rawCancel;
 }
 
 (window as unknown as Record<string, unknown>).__triclockDebug = (): void => { dumpState(getTime(), config); };
 
-function digitalTimeHitTest(clientX: number, clientY: number): boolean {
-  const dt = config.digitalTime;
-  const { cx, cy, size } = state;
-  const fontSize = Math.max(dt.fontSizeMin, size * dt.fontSizeRatio);
-  const x = cx + size * dt.xOffsetRatio;
-  const triBottom = cy + size * config.geometry.botY;
-  const y = Math.max(cy + size * dt.yOffsetRatio, triBottom + MIN_DIGITAL_GAP);
-  const halfW = fontSize * 2.5;
-  const halfH = fontSize * 0.7;
-  return Math.abs(clientX - x) < halfW && Math.abs(clientY - y) < halfH;
-}
-
-function handleDigitalTimeToggle(clientX: number, clientY: number): void {
-  if (!digitalTimeHitTest(clientX, clientY)) return;
+function toggleDigitalTime(): void {
   const mut = asMutable(config);
   mut.digitalTime.visible = !config.digitalTime.visible;
   syncConfigUI();
 }
 
-canvas.addEventListener('touchend', (e) => {
-  const t = e.changedTouches[0];
-  if (!t) return;
-  if (digitalTimeHitTest(t.clientX, t.clientY)) {
-    e.preventDefault();
-    handleDigitalTimeToggle(t.clientX, t.clientY);
-  }
+let touchHandled = false;
+canvas.addEventListener('touchend', () => {
+  touchHandled = true;
+  toggleDigitalTime();
 });
-canvas.addEventListener('click', (e) => {
-  handleDigitalTimeToggle(e.clientX, e.clientY);
+canvas.addEventListener('click', () => {
+  if (touchHandled) { touchHandled = false; return; }
+  toggleDigitalTime();
 });
 
 const loop = createLoop(ctx, () => state, () => config, getTime);

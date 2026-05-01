@@ -19,7 +19,7 @@ export function createModeSelector(
   const wrapper = document.createElement('div');
   wrapper.style.cssText = [
     'position:fixed',
-    'top:clamp(8px, 1.5vh, 16px)',
+    'top:max(clamp(8px, 1.5vh, 16px), env(safe-area-inset-top))',
     'left:50%',
     'transform:translateX(-50%)',
     'z-index:100',
@@ -37,7 +37,7 @@ export function createModeSelector(
     'font-size:clamp(11px, 1.5vw, 16px)',
     'font-weight:600',
     'letter-spacing:0.35em',
-    'color:#e0e0e8',
+    'color:#e5e5eb',
     'opacity:0.4',
     'cursor:pointer',
   ].join(';');
@@ -61,7 +61,7 @@ export function createModeSelector(
       const dot = document.createElement('span');
       dot.textContent = '\u00B7';
       dot.style.cssText = [
-        'color:#e0e0e8',
+        'color:#e5e5eb',
         'opacity:0.12',
         'font-size:12px',
         'padding:0 8px',
@@ -82,7 +82,7 @@ export function createModeSelector(
       'font-weight:400',
       'text-transform:uppercase',
       'letter-spacing:0.18em',
-      'color:#e0e0e8',
+      'color:#e5e5eb',
       'opacity:0.18',
       'transition:opacity 0.25s ease',
     ].join(';');

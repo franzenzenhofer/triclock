@@ -61,8 +61,8 @@ export function createFullscreenToggle(config: TrichronoConfig): HTMLElement {
   }
   btn.style.cssText = [
     'position:fixed',
-    'bottom:10px',
-    'right:40px',
+    'bottom:max(10px, env(safe-area-inset-bottom))',
+    'right:calc(max(10px, env(safe-area-inset-right)) + 30px)',
     'cursor:pointer',
     'color:' + config.digitalTime.color,
     'opacity:0.15',
