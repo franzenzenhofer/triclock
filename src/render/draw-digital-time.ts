@@ -28,6 +28,12 @@ export function drawDigitalTime(
   ctx.textBaseline = 'middle';
   ctx.shadowColor = dt.shadowColor;
   ctx.shadowBlur = dt.shadowBlur;
+  // Match the spaced-out feel of the TRICLOCK / SHARE YOUR TIME labels.
+  type CtxWithSpacing = CanvasRenderingContext2D & { letterSpacing?: string };
+  const spaced = ctx as CtxWithSpacing;
+  if ('letterSpacing' in spaced) {
+    spaced.letterSpacing = String(Math.round(fontSize * 0.18)) + 'px';
+  }
   ctx.fillText(text, x, y);
   ctx.restore();
 }
