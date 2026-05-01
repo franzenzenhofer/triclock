@@ -8,7 +8,7 @@ export function dumpState(time: TimeValues, config: TrichronoConfig): void {
   const hsl = computeBaseHsl(fracs, config.hsl);
   const [r, g, b] = hslToRgb01(hsl.h, hsl.s, hsl.l);
   const sector = Math.floor(hsl.h / 30);
-  const phase = hsl.h / 60;
+  const huePhase = hsl.h / 60;
 
   // eslint-disable-next-line no-console
   console.table({
@@ -23,7 +23,8 @@ export function dumpState(time: TimeValues, config: TrichronoConfig): void {
     'Tint G': g.toFixed(6),
     'Tint B': b.toFixed(6),
     'Sector (hue/30)': String(sector),
-    'Plasma Phase (hue/60)': phase.toFixed(4),
+    'Hue Phase (hue/60, debug only)': huePhase.toFixed(4),
+    'Plasma Phase (per-layer constant)': 'see compute-plasma-phase.ts',
     'Plasma Tint Blend': '0.45 (fixed in shader)',
     'Plasma Enabled': String(config.triangles.plasma.enabled),
   });
