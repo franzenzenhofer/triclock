@@ -143,7 +143,7 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
   }),
   digitalTime: Object.freeze({
     xOffsetRatio: 0,
-    yOffsetRatio: 0.82,
+    yOffsetRatio: 0.7,
     fontSizeRatio: 0.06,
     fontSizeMin: 14,
     fontFamily: "Georgia, 'Times New Roman', serif",
