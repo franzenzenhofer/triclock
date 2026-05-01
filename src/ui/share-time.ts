@@ -78,12 +78,30 @@ interface ShareClockInput {
   readonly time: TimeValues;
   readonly title: string;
   readonly prefix: string;
+  readonly encodeTimeInUrl?: boolean;
+}
+
+const PUBLIC_BASE_URL = 'https://triclock.franzai.com/';
+
+function buildShareUrl(time: TimeValues, encodeTimeInUrl: boolean): string {
+  // In native iOS WKWebView wrappers the page loads from app://local/.
+  // Recipients of a shared link cannot reach that URL, so always rewrite
+  // to the canonical public origin when shared.
+  const isNative = window.location.protocol === 'app:';
+  const base = isNative
+    ? PUBLIC_BASE_URL
+    : window.location.origin + window.location.pathname;
+  if (!encodeTimeInUrl) return base;
+  const hh = String(time.hours).padStart(2, '0');
+  const mm = String(time.minutes).padStart(2, '0');
+  const ss = String(time.seconds).padStart(2, '0');
+  return base + '#?time=' + hh + ':' + mm + ':' + ss;
 }
 
 export async function shareClockImage(input: ShareClockInput): Promise<void> {
-  const { canvas, config, time, title, prefix } = input;
+  const { canvas, config, time, title, prefix, encodeTimeInUrl = false } = input;
   const timeStr = formatDigital(time, true);
-  const url = window.location.origin + window.location.pathname;
+  const url = buildShareUrl(time, encodeTimeInUrl);
   const text = title + '\n' + url;
   const filename = prefix + timeStr.replace(/:/g, '') + '.png';
 
@@ -101,20 +119,20 @@ export function createShareLink(
   link.style.cssText = [
     'cursor:pointer',
     'font-family:' + UI_FONT,
-    'font-weight:500',
-    'font-size:clamp(8px, 1.1vw, 12px)',
+    'font-weight:600',
+    'font-size:clamp(11px, 1.5vw, 16px)',
     'text-transform:uppercase',
-    'letter-spacing:0.12em',
+    'letter-spacing:0.18em',
     'color:#e5e5eb',
-    'opacity:0.6',
+    'opacity:0.75',
     'user-select:none',
-    'border-bottom:1px solid rgba(224,224,232,0.25)',
+    'border-bottom:1px solid rgba(224,224,232,0.3)',
     'padding-bottom:2px',
     'transition:opacity 0.25s ease',
   ].join(';');
 
-  link.addEventListener('mouseenter', () => { link.style.opacity = '0.85'; });
-  link.addEventListener('mouseleave', () => { link.style.opacity = '0.6'; });
+  link.addEventListener('mouseenter', () => { link.style.opacity = '0.95'; });
+  link.addEventListener('mouseleave', () => { link.style.opacity = '0.75'; });
   link.addEventListener('click', () => {
     const time = getCurrentTime();
     const timeStr = formatDigital(time, true);

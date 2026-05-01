@@ -28,7 +28,11 @@ if (!hashParams.plasma) {
 }
 
 const hasHash = !!hashMode || !!hashOverrides;
-const needsOnboarding = !hasHash;
+// Skip the mode-cycling intro inside the native iOS WKWebView wrapper.
+// Native users expect the app to land directly on its default mode
+// without flicker. The web visit at triclock.franzai.com still gets it.
+const isNativeApp = window.location.protocol === 'app:';
+const needsOnboarding = !hasHash && !isNativeApp;
 
 // Digital time is visible by default. Tap to toggle off.
 
@@ -128,7 +132,7 @@ shareWrap.style.cssText = [
 const shareLink = createShareLink(canvas, config);
 const dot = document.createElement('span');
 dot.textContent = '\u00b7';
-dot.style.cssText = 'color:#e5e5eb;opacity:0.5;user-select:none;font-size:12px';
+dot.style.cssText = 'color:#e5e5eb;opacity:0.6;user-select:none;font-size:16px';
 const anyTimeLink = createAnyTimeLink(() => {
   shareWrap.style.display = 'none';
   meetPicker.show();

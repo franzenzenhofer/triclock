@@ -20,5 +20,6 @@ export async function shareMeetImage(
     canvas, config, time,
     title: buildMeetTitle(date.label, timeStr),
     prefix: 'triclock-meet-' + date.prefix + '-',
+    encodeTimeInUrl: true,
   });
 }

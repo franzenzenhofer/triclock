@@ -18,14 +18,14 @@ function makeLink(label: string, opacity: string): HTMLDivElement {
   el.style.cssText = [
     'cursor:pointer',
     'font-family:' + UI_FONT,
-    'font-weight:500',
-    'font-size:clamp(8px, 1.1vw, 12px)',
+    'font-weight:600',
+    'font-size:clamp(11px, 1.5vw, 16px)',
     'text-transform:uppercase',
-    'letter-spacing:0.12em',
+    'letter-spacing:0.18em',
     'color:#e5e5eb',
     'opacity:' + opacity,
     'user-select:none',
-    'border-bottom:1px solid rgba(224,224,232,0.15)',
+    'border-bottom:1px solid rgba(224,224,232,0.3)',
     'padding-bottom:2px',
     'transition:opacity 0.25s ease',
   ].join(';');
@@ -174,7 +174,7 @@ export function createMeetTimePicker(
 }
 
 export function createAnyTimeLink(onClick: () => void): HTMLElement {
-  const link = makeLink('ANY TIME', '0.6');
+  const link = makeLink('ANY TIME', '0.75');
   link.addEventListener('click', onClick);
   return link;
 }
