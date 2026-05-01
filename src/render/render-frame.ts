@@ -11,6 +11,7 @@ import { drawTips } from './draw-tips.js';
 import { drawVertexDots } from './draw-vertex-dots.js';
 import { drawDigitalTime } from './draw-digital-time.js';
 import { drawEdgeLabels } from './draw-edge-labels.js';
+import { createPlasmaDrawContext } from './plasma-draw-context.js';
 
 export function renderFrame(
   ctx: CanvasRenderingContext2D,
@@ -21,6 +22,7 @@ export function renderFrame(
   const fracs = fractionalize(time);
   const baseHsl = computeBaseHsl(fracs, config.hsl);
   const verts = getTriangle(state.cx, state.cy, state.size, config.geometry);
+  const plasma = createPlasmaDrawContext(verts, performance.now(), config.triangles.plasma.speed);
 
   drawBackground(ctx, state, config);
   drawFrameLines(ctx, verts, config);
@@ -28,7 +30,7 @@ export function renderFrame(
 
   const tips = drawAllEdges(ctx, verts, fracs, config.edgeMapping, config);
 
-  drawTriangleLayers(ctx, verts, tips, baseHsl, config, state.size);
+  drawTriangleLayers(ctx, verts, tips, baseHsl, config, state.size, plasma);
   drawTips(ctx, tips, state.size, config);
   drawVertexDots(ctx, verts, config);
   drawEdgeLabels(ctx, verts, state.size, config);

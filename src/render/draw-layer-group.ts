@@ -3,6 +3,7 @@ import type { BaseHsl } from '../color/compute-base-hsl.js';
 import { drawColorTriangle } from './draw-color-triangle.js';
 import { computePlasmaPhase } from './compute-plasma-phase.js';
 import { HUE_FULL_CIRCLE } from '../constants.js';
+import type { PlasmaDrawContext } from './plasma-draw-context.js';
 
 export function drawLayerGroup(
   ctx: CanvasRenderingContext2D,
@@ -12,6 +13,7 @@ export function drawLayerGroup(
   base: BaseHsl,
   config: TrichronoConfig,
   size: number,
+  plasma: PlasmaDrawContext,
 ): void {
   const noShadow = { ...config.triangles, shadowBlur: 0, shadowAlpha: 0 };
   for (const layer of layers) {
@@ -29,6 +31,7 @@ export function drawLayerGroup(
         noShadow,
         size,
         plasmaPhase,
+        plasma,
       );
     }
   }

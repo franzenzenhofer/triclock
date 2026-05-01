@@ -5,6 +5,7 @@ import { brightColor } from '../color/bright-color.js';
 import type { HslConfig } from '../types/config.js';
 import { drawTrianglePath } from './draw-triangle-path.js';
 import { getPlasmaRenderer } from './plasma-renderer.js';
+import type { PlasmaDrawContext } from './plasma-draw-context.js';
 
 export function drawColorTriangle(
   ctx: CanvasRenderingContext2D,
@@ -20,6 +21,7 @@ export function drawColorTriangle(
   tc: TrianglesConfig,
   size: number,
   plasmaPhase: number,
+  plasma: PlasmaDrawContext,
 ): void {
   const main = hslToHex(hue, sat, lit);
   const bright = brightColor(hue, lit, hslConfig);
@@ -37,15 +39,11 @@ export function drawColorTriangle(
     const pr = getPlasmaRenderer(tc.plasma.textureSize);
     if (pr) {
       const [r, g, b] = hslToRgb01(hue, sat, lit);
-      pr.render(performance.now() / 1000 * tc.plasma.speed, r, g, b, plasmaPhase);
+      pr.render(plasma.time, r, g, b, plasmaPhase);
       ctx.clip();
-      const minX = Math.min(p1.x, p2.x, p3.x);
-      const minY = Math.min(p1.y, p2.y, p3.y);
-      const maxX = Math.max(p1.x, p2.x, p3.x);
-      const maxY = Math.max(p1.y, p2.y, p3.y);
       ctx.globalAlpha = tc.plasma.alpha;
       ctx.globalCompositeOperation = tc.plasma.blendMode;
-      ctx.drawImage(pr.canvas, minX, minY, maxX - minX, maxY - minY);
+      ctx.drawImage(pr.canvas, plasma.bounds.x, plasma.bounds.y, plasma.bounds.width, plasma.bounds.height);
       ctx.globalCompositeOperation = tc.compositeOp;
     }
   }

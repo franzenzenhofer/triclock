@@ -4,6 +4,7 @@ import { drawColorTriangle } from './draw-color-triangle.js';
 import { drawLayerGroup } from './draw-layer-group.js';
 import { computePlasmaPhase } from './compute-plasma-phase.js';
 import { lineIntersect } from '../math/line-intersect.js';
+import type { PlasmaDrawContext } from './plasma-draw-context.js';
 
 interface TipPoints {
   readonly hTip: Point;
@@ -18,6 +19,7 @@ export function drawTriangleLayers(
   base: BaseHsl,
   config: TrichronoConfig,
   size: number,
+  plasma: PlasmaDrawContext,
 ): void {
   const tc = config.triangles;
   const step = tc.hueStep;
@@ -29,26 +31,26 @@ export function drawTriangleLayers(
     [verts.A, verts.B, tips.hTip],
     [verts.B, verts.C, tips.mTip],
     [verts.C, verts.A, tips.sTip],
-  ], step, base, config, size);
+  ], step, base, config, size, plasma);
 
   drawLayerGroup(ctx, tc.crossLayers, [
     [verts.A, tips.mTip, tips.sTip],
     [verts.B, tips.hTip, tips.sTip],
     [verts.C, tips.hTip, tips.mTip],
-  ], step, base, config, size);
+  ], step, base, config, size, plasma);
 
   drawLayerGroup(ctx, tc.wedgeLayers, [
     [verts.A, tips.hTip, tips.sTip],
     [verts.B, tips.hTip, tips.mTip],
     [verts.C, tips.mTip, tips.sTip],
-  ], step, base, config, size);
+  ], step, base, config, size, plasma);
 
   const g1 = lineIntersect(verts.A, tips.mTip, verts.B, tips.sTip);
   const g2 = lineIntersect(verts.A, tips.mTip, verts.C, tips.hTip);
   const g3 = lineIntersect(verts.B, tips.sTip, verts.C, tips.hTip);
   drawLayerGroup(ctx, tc.gapLayers, [
     [g1, g2, g3],
-  ], step, base, config, size);
+  ], step, base, config, size, plasma);
 
   const pl = tc.primaryLayer;
   if (pl.visible) {
@@ -60,6 +62,7 @@ export function drawTriangleLayers(
       tc,
       size,
       computePlasmaPhase(pl.hueOffset, step, 0),
+      plasma,
     );
   }
 
