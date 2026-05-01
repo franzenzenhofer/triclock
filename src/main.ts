@@ -30,11 +30,7 @@ if (!hashParams.plasma) {
 const hasHash = !!hashMode || !!hashOverrides;
 const needsOnboarding = !hasHash;
 
-// Returning visitors: digital time hidden by default
-if (hasHash) {
-  const mut = asMutable(config);
-  mut.digitalTime.visible = false;
-}
+// Digital time is visible by default. Tap to toggle off.
 
 if (hashMode) {
   applyDisplayMode(config, hashMode);
@@ -79,21 +75,6 @@ function syncConfigUI(): void {
 }
 
 let cancelOnboarding: (() => void) | null = null;
-
-function fadeOutDigitalTime(): void {
-  const mut = asMutable(config);
-  const startAlpha = config.digitalTime.alpha;
-  const start = performance.now();
-  const duration = 500;
-  function step(now: number): void {
-    const t = Math.min(1, (now - start) / duration);
-    mut.digitalTime.alpha = startAlpha * (1 - t);
-    if (t < 1) { requestAnimationFrame(step); return; }
-    mut.digitalTime.visible = false;
-    mut.digitalTime.alpha = startAlpha;
-  }
-  requestAnimationFrame(step);
-}
 
 function endOnboardingMode(): void {
   modeSelector.setOnboarding(false);
@@ -177,7 +158,6 @@ if (needsOnboarding) {
       panel.refresh();
     },
     endOnboardingMode,
-    fadeOutDigitalTime,
   );
   cancelOnboarding = rawCancel;
 }
@@ -190,15 +170,20 @@ function toggleDigitalTime(): void {
   syncConfigUI();
 }
 
-let touchHandled = false;
-canvas.addEventListener('touchend', () => {
-  touchHandled = true;
-  toggleDigitalTime();
-});
-canvas.addEventListener('click', () => {
-  if (touchHandled) { touchHandled = false; return; }
-  toggleDigitalTime();
-});
+// Double-tap / double-click on the canvas toggles the digital time.
+const DOUBLE_TAP_MS = 350;
+let lastTap = 0;
+function handleDoubleTap(): void {
+  const now = performance.now();
+  if (now - lastTap < DOUBLE_TAP_MS) {
+    toggleDigitalTime();
+    lastTap = 0;
+    return;
+  }
+  lastTap = now;
+}
+canvas.addEventListener('dblclick', toggleDigitalTime);
+canvas.addEventListener('touchend', handleDoubleTap);
 
 const loop = createLoop(ctx, () => state, () => config, getTime);
 loop.start();

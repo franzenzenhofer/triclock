@@ -24,12 +24,24 @@ function createGearSvg(): SVGSVGElement {
   return svg;
 }
 
+// In native iOS WKWebView wrappers (ios-app-maker) the page loads from
+// the app:// custom scheme, where the tweakpane debug panel is not
+// useful. Hide the gear in that context.
+function isNativeAppContext(): boolean {
+  return window.location.protocol === 'app:';
+}
+
 export function createConfigToggleLink(
   pane: Pane,
   config: TrichronoConfig,
 ): HTMLElement {
   const dt = config.digitalTime;
   const link = document.createElement('div');
+  if (isNativeAppContext()) {
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    return link;
+  }
   const svg = createGearSvg();
   link.appendChild(svg);
   link.style.cssText = [
