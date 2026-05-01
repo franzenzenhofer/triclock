@@ -18,8 +18,8 @@ interface DisplayMode {
 
 export const DISPLAY_MODES: readonly DisplayMode[] = [
   { name: 'prism', label: 'PRISM', layers: { wedge: true, primary: true, cross: false, gap: false } },
-  { name: 'pure', label: 'PURE', layers: { wedge: false, primary: true, cross: false, gap: false } },
   { name: 'flux', label: 'FLUX', layers: { wedge: true, primary: true, cross: true, gap: true } },
+  { name: 'pure', label: 'PURE', layers: { wedge: false, primary: true, cross: false, gap: false } },
 ] as const;
 
 function layersMatch(config: TrichronoConfig, layers: LayerVisibility): boolean {

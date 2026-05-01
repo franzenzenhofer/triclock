@@ -1,6 +1,6 @@
 import type { DisplayModeName } from './display-modes.js';
 
-const SEQUENCE: readonly DisplayModeName[] = ['prism', 'pure', 'flux', 'pure'];
+const SEQUENCE: readonly DisplayModeName[] = ['prism', 'pure', 'flux'];
 const FADE_MS = 500;
 const HOLD_MS = 1000;
 
@@ -8,6 +8,7 @@ export function startOnboarding(
   canvas: HTMLCanvasElement,
   applyMode: (name: DisplayModeName) => void,
   onComplete: () => void,
+  onFirstFade?: () => void,
 ): () => void {
   let cancelled = false;
   const timers: ReturnType<typeof setTimeout>[] = [];
@@ -20,6 +21,7 @@ export function startOnboarding(
 
     timers.push(setTimeout(() => {
       if (cancelled) return;
+      if (i === 0) onFirstFade?.();
       canvas.style.opacity = '0';
     }, t));
     t += FADE_MS;

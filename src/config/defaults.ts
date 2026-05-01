@@ -8,8 +8,8 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
     hours: '#ff3366',
     minutes: '#00d4ff',
     seconds: '#b8ff00',
-    inactive: '#444455',
-    text: '#e0e0e8',
+    inactive: '#60606f',
+    text: '#e5e5eb',
   }),
   geometry: Object.freeze({
     sizeRatio: 0.42,
@@ -74,13 +74,13 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
       Object.freeze({ visible: false, hueOffset: 180, lightnessMultiplier: 0.85, fillAlpha: 0.2, borderAlpha: 0.45 }),
     ]),
     crossLayers: Object.freeze([
-      Object.freeze({ visible: false, hueOffset: 60, lightnessMultiplier: 0.95, fillAlpha: 0.3, borderAlpha: 0.55 }),
+      Object.freeze({ visible: true, hueOffset: 60, lightnessMultiplier: 0.95, fillAlpha: 0.3, borderAlpha: 0.55 }),
     ]),
     wedgeLayers: Object.freeze([
-      Object.freeze({ visible: false, hueOffset: 90, lightnessMultiplier: 1.0, fillAlpha: 0.35, borderAlpha: 0.65 }),
+      Object.freeze({ visible: true, hueOffset: 90, lightnessMultiplier: 1.0, fillAlpha: 0.35, borderAlpha: 0.65 }),
     ]),
     gapLayers: Object.freeze([
-      Object.freeze({ visible: false, hueOffset: 0, lightnessMultiplier: 0.7, fillAlpha: 0.15, borderAlpha: 0.3 }),
+      Object.freeze({ visible: true, hueOffset: 0, lightnessMultiplier: 0.7, fillAlpha: 0.15, borderAlpha: 0.3 }),
     ]),
     primaryLayer: Object.freeze({
       visible: true,
@@ -148,10 +148,10 @@ export const DEFAULT_CONFIG: Readonly<TrichronoConfig> = Object.freeze({
     fontSizeMin: 14,
     fontFamily: "Georgia, 'Times New Roman', serif",
     fontWeight: 700,
-    alpha: 0.25,
+    alpha: 0.55,
     visible: true,
     showSeconds: false,
-    color: '#e0e0e8',
+    color: '#e5e5eb',
     shadowBlur: 0,
     shadowColor: '#000000',
   }),

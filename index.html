@@ -22,12 +22,19 @@
     html, body { height: 100%; overflow: hidden; }
     body { background: #0b0b12; }
     canvas { display: block; position: fixed; top: 0; left: 0; z-index: 0; }
-    @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-    body { animation: fadeIn 0.6s ease-out; }
+    /* Boot fade: solid black overlay until the first clock frame paints, */
+    /* then fades out and is removed. Prevents flash of unstyled UI. */
+    #boot-fade {
+      position: fixed; inset: 0; z-index: 2147483646;
+      background: #0b0b12; opacity: 1; pointer-events: none;
+      transition: opacity 350ms ease-out;
+    }
+    #boot-fade.is-ready { opacity: 0; }
   </style>
 </head>
 <body>
   <canvas id="c"></canvas>
+  <div id="boot-fade"></div>
   <script type="module" src="/src/main.ts"></script>
   <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');</script>
 </body>

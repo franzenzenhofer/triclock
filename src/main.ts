@@ -39,7 +39,7 @@ if (hasHash) {
 if (hashMode) {
   applyDisplayMode(config, hashMode);
 } else if (!hashOverrides) {
-  applyDisplayMode(config, 'pure');
+  applyDisplayMode(config, 'flux');
 }
 
 const modeSelector = createModeSelector(config, handleUserConfigChange);
@@ -147,7 +147,7 @@ shareWrap.style.cssText = [
 const shareLink = createShareLink(canvas, config);
 const dot = document.createElement('span');
 dot.textContent = '\u00b7';
-dot.style.cssText = 'color:#e5e5eb;opacity:0.25;user-select:none;font-size:12px';
+dot.style.cssText = 'color:#e5e5eb;opacity:0.5;user-select:none;font-size:12px';
 const anyTimeLink = createAnyTimeLink(() => {
   shareWrap.style.display = 'none';
   meetPicker.show();
@@ -202,3 +202,13 @@ canvas.addEventListener('click', () => {
 
 const loop = createLoop(ctx, () => state, () => config, getTime);
 loop.start();
+
+// Fade the boot overlay out after the first frame has painted.
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    const overlay = document.getElementById('boot-fade');
+    if (!overlay) return;
+    overlay.classList.add('is-ready');
+    overlay.addEventListener('transitionend', () => { overlay.remove(); }, { once: true });
+  });
+});

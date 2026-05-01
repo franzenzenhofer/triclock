@@ -174,7 +174,7 @@ export function createMeetTimePicker(
 }
 
 export function createAnyTimeLink(onClick: () => void): HTMLElement {
-  const link = makeLink('ANY TIME', '0.35');
+  const link = makeLink('ANY TIME', '0.6');
   link.addEventListener('click', onClick);
   return link;
 }

@@ -38,7 +38,7 @@ export function createModeSelector(
     'font-weight:600',
     'letter-spacing:0.35em',
     'color:#e5e5eb',
-    'opacity:0.4',
+    'opacity:0.75',
     'cursor:pointer',
   ].join(';');
   header.addEventListener('click', () => {
@@ -62,7 +62,7 @@ export function createModeSelector(
       dot.textContent = '\u00B7';
       dot.style.cssText = [
         'color:#e5e5eb',
-        'opacity:0.12',
+        'opacity:0.3',
         'font-size:12px',
         'padding:0 8px',
         'pointer-events:none',
@@ -83,12 +83,12 @@ export function createModeSelector(
       'text-transform:uppercase',
       'letter-spacing:0.18em',
       'color:#e5e5eb',
-      'opacity:0.18',
+      'opacity:0.4',
       'transition:opacity 0.25s ease',
     ].join(';');
 
     btn.addEventListener('mouseenter', () => {
-      if (btn.style.fontWeight !== '400' || btn.style.opacity === '0.18') btn.style.opacity = '0.3';
+      if (btn.style.fontWeight !== '400' || btn.style.opacity === '0.4') btn.style.opacity = '0.55';
     });
     btn.addEventListener('mouseleave', () => {
       highlight();
@@ -96,7 +96,7 @@ export function createModeSelector(
     btn.addEventListener('click', () => {
       applyDisplayMode(config, mode.name);
       onChange();
-      btn.style.opacity = '0.5';
+      btn.style.opacity = '0.85';
       setTimeout(() => { highlight(); }, 120);
     });
 
@@ -108,8 +108,8 @@ export function createModeSelector(
 
   function highlight(): void {
     const active = detectActiveMode(config);
-    const activeOp = onboardingActive ? '0.65' : '0.35';
-    const inactiveOp = onboardingActive ? '0.08' : '0.18';
+    const activeOp = onboardingActive ? '0.9' : '0.7';
+    const inactiveOp = onboardingActive ? '0.2' : '0.4';
     DISPLAY_MODES.forEach((mode, i) => {
       const btn = buttons[i];
       if (!btn) return;

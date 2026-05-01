@@ -105,16 +105,16 @@ export function createShareLink(
     'font-size:clamp(8px, 1.1vw, 12px)',
     'text-transform:uppercase',
     'letter-spacing:0.12em',
-    'color:#e0e0e8',
-    'opacity:0.35',
+    'color:#e5e5eb',
+    'opacity:0.6',
     'user-select:none',
-    'border-bottom:1px solid rgba(224,224,232,0.15)',
+    'border-bottom:1px solid rgba(224,224,232,0.25)',
     'padding-bottom:2px',
     'transition:opacity 0.25s ease',
   ].join(';');
 
-  link.addEventListener('mouseenter', () => { link.style.opacity = '0.6'; });
-  link.addEventListener('mouseleave', () => { link.style.opacity = '0.35'; });
+  link.addEventListener('mouseenter', () => { link.style.opacity = '0.85'; });
+  link.addEventListener('mouseleave', () => { link.style.opacity = '0.6'; });
   link.addEventListener('click', () => {
     const time = getCurrentTime();
     const timeStr = formatDigital(time, true);
