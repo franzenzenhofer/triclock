@@ -41,9 +41,20 @@ export function createModeSelector(
     'opacity:0.75',
     'cursor:pointer',
   ].join(';');
+  // Double-tap the TRICLOCK header to restart the intro (clears the hash and
+  // reloads). A single click is too easy to trigger by accident inside the
+  // iOS wrapper, so we require two taps within DOUBLE_TAP_MS.
+  const DOUBLE_TAP_MS = 350;
+  let lastHeaderTapAt = 0;
   header.addEventListener('click', () => {
-    window.history.replaceState(null, '', window.location.pathname);
-    window.location.reload();
+    const now = performance.now();
+    if (now - lastHeaderTapAt < DOUBLE_TAP_MS) {
+      lastHeaderTapAt = 0;
+      window.history.replaceState(null, '', window.location.pathname);
+      window.location.reload();
+      return;
+    }
+    lastHeaderTapAt = now;
   });
   const nav = document.createElement('nav');
   nav.style.cssText = [

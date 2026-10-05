@@ -15,16 +15,19 @@ export interface HashParams {
 
 function splitHash(): { primary: string; params: Map<string, string> } {
   const raw = window.location.hash.slice(1);
-  const parts = raw.split('&');
-  const primary = parts[0] ?? '';
+  const qIdx = raw.indexOf('?');
+  const primary = qIdx === -1 ? raw : raw.slice(0, qIdx);
+  const paramStr = qIdx === -1 ? '' : raw.slice(qIdx + 1);
   const params = new Map<string, string>();
-  for (let i = 1; i < parts.length; i++) {
-    const part = parts[i] as string;
-    const eq = part.indexOf('=');
-    if (eq === -1) {
-      params.set(part.toLowerCase(), '');
-    } else {
-      params.set(part.slice(0, eq).toLowerCase(), part.slice(eq + 1));
+  if (paramStr) {
+    for (const part of paramStr.split('&')) {
+      if (!part) continue;
+      const eq = part.indexOf('=');
+      if (eq === -1) {
+        params.set(part.toLowerCase(), '');
+      } else {
+        params.set(part.slice(0, eq).toLowerCase(), part.slice(eq + 1));
+      }
     }
   }
   return { primary, params };

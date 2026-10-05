@@ -175,6 +175,10 @@ export function createMeetTimePicker(
 
 export function createAnyTimeLink(onClick: () => void): HTMLElement {
   const link = makeLink('ANY TIME', '0.75');
+  // Inherit font size from the share wrapper so SHARE YOUR TIME and ANY TIME
+  // scale together and always fit on a single line.
+  link.style.fontSize = 'inherit';
+  link.style.whiteSpace = 'nowrap';
   link.addEventListener('click', onClick);
   return link;
 }
