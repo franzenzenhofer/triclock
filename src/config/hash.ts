@@ -13,14 +13,20 @@ export interface HashParams {
   readonly plasma: boolean;
 }
 
+/**
+ * The hash is `<primary>?<params>` (share links: `#?time=12:34:56`, `#prism?time=09:08:07`) or the older
+ * `<primary>&<params>` (`#flux&time=10:09:30`). The iOS factory opens App Store screenshot scenes as
+ * `#ios-maker-shot=<hash>`; the prefix is dropped first.
+ */
 function splitHash(): { primary: string; params: Map<string, string> } {
-  // the iOS factory opens App Store screenshot scenes as #ios-maker-shot=<scene hash>
   const raw = window.location.hash.slice(1).replace(/^ios-maker-shot=/, '');
-  const parts = raw.split('&');
-  const primary = parts[0] ?? '';
+  const qIdx = raw.indexOf('?');
+  const cut = qIdx === -1 ? raw.indexOf('&') : qIdx;
+  const primary = cut === -1 ? raw : raw.slice(0, cut);
+  const paramStr = cut === -1 ? '' : raw.slice(cut + 1);
   const params = new Map<string, string>();
-  for (let i = 1; i < parts.length; i++) {
-    const part = parts[i] as string;
+  for (const part of paramStr.split('&')) {
+    if (!part) continue;
     const eq = part.indexOf('=');
     if (eq === -1) {
       params.set(part.toLowerCase(), '');

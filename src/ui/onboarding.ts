@@ -1,6 +1,10 @@
 import type { DisplayModeName } from './display-modes.js';
 
-const SEQUENCE: readonly DisplayModeName[] = ['prism', 'pure', 'flux'];
+// Show each mode once, then settle on FLUX (the middle button).
+// Order matches the mode-selector left-to-right order: PURE, FLUX, PRISM,
+// then back to FLUX so the user sees what each layer combination looks like
+// before landing on the default.
+const SEQUENCE: readonly DisplayModeName[] = ['pure', 'prism', 'flux'];
 const FADE_MS = 500;
 const HOLD_MS = 1000;
 

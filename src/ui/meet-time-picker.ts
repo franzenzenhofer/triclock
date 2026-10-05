@@ -21,7 +21,7 @@ function makeLink(label: string, opacity: string): HTMLDivElement {
     'font-weight:600',
     'font-size:clamp(11px, 1.5vw, 16px)',
     'text-transform:uppercase',
-    'letter-spacing:0.18em',
+    'letter-spacing:clamp(0.02em, calc((100vw - 300px) * 0.025), 0.18em)',
     'color:#e5e5eb',
     'opacity:' + opacity,
     'user-select:none',
@@ -175,6 +175,10 @@ export function createMeetTimePicker(
 
 export function createAnyTimeLink(onClick: () => void): HTMLElement {
   const link = makeLink('ANY TIME', '0.75');
+  // Inherit font size from the share wrapper so SHARE YOUR TIME and ANY TIME
+  // scale together and always fit on a single line.
+  link.style.fontSize = 'inherit';
+  link.style.whiteSpace = 'nowrap';
   link.addEventListener('click', onClick);
   return link;
 }

@@ -120,15 +120,18 @@ export function createShareLink(
     'cursor:pointer',
     'font-family:' + UI_FONT,
     'font-weight:600',
-    'font-size:clamp(11px, 1.5vw, 16px)',
+    // Inherits from the share wrapper so both labels scale together
+    // and "SHARE YOUR TIME" never wraps to a second line.
+    'font-size:inherit',
     'text-transform:uppercase',
-    'letter-spacing:0.18em',
+    'letter-spacing:clamp(0.02em, calc((100vw - 300px) * 0.025), 0.18em)',
     'color:#e5e5eb',
     'opacity:0.75',
     'user-select:none',
     'border-bottom:1px solid rgba(224,224,232,0.3)',
     'padding-bottom:2px',
     'transition:opacity 0.25s ease',
+    'white-space:nowrap',
   ].join(';');
 
   link.addEventListener('mouseenter', () => { link.style.opacity = '0.95'; });

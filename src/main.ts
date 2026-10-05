@@ -27,12 +27,12 @@ if (!hashParams.plasma) {
   mut.triangles.plasma = { ...config.triangles.plasma, enabled: false };
 }
 
-const hasHash = !!hashMode || !!hashOverrides;
-// Skip the mode-cycling intro inside the native iOS WKWebView wrapper.
-// Native users expect the app to land directly on its default mode
-// without flicker. The web visit at triclock.franzai.com still gets it.
-const isNativeApp = window.location.protocol === 'app:';
-const needsOnboarding = !hasHash && !isNativeApp;
+const hasHash = !!hashMode || !!hashOverrides || !!hashParams.time;
+// Play the mode-cycling intro on every cold start (web and native iOS).
+// In the wrapper, "cold start" means each launch after the user kills the
+// app, which is exactly what we want. A hash override (deep link) still
+// skips the intro so deep-linked time/share URLs land instantly.
+const needsOnboarding = !hasHash;
 
 // Digital time is visible by default. Tap to toggle off.
 
@@ -44,8 +44,28 @@ if (hashMode) {
 
 const modeSelector = createModeSelector(config, handleUserConfigChange);
 
+// Cache the top inset so the canvas layout never shifts when iOS Safari
+// hides/shows the URL bar (which subtly moves env(safe-area-inset-top) and
+// therefore the mode selector's bottom). Track the *largest* observed value
+// so we always reserve enough space; once the URL bar collapses and the
+// dynamic island reasserts, the inset cannot shrink and pull the triangle
+// back up.
+let cachedTopInset = 0;
 function measureTopInset(): number {
-  return modeSelector.element.getBoundingClientRect().bottom;
+  const current = modeSelector.element.getBoundingClientRect().bottom;
+  if (current > cachedTopInset) cachedTopInset = current;
+  return cachedTopInset;
+}
+window.addEventListener('orientationchange', () => {
+  cachedTopInset = 0;
+  requestAnimationFrame(() => requestAnimationFrame(handleResize));
+});
+
+// The share row sits at the bottom; the clock keeps clear of it (phone landscape covered the digital time).
+let shareRow: HTMLElement | null = null;
+function measureBottomInset(): number {
+  if (!shareRow || shareRow.style.display === 'none') return 0;
+  return window.innerHeight - shareRow.getBoundingClientRect().top + 16;
 }
 
 function buildLayoutInput(): LayoutInput {
@@ -56,7 +76,9 @@ function buildLayoutInput(): LayoutInput {
     sizeRatio: config.geometry.sizeRatio,
     botY: config.geometry.botY,
     digitalYRatio: config.digitalTime.yOffsetRatio,
-    topInset: measureTopInset(),
+    // a little air below the header, so the top corner's tick never touches TRICLOCK
+    topInset: measureTopInset() + 16,
+    bottomInset: measureBottomInset(),
   };
 }
 
@@ -116,7 +138,7 @@ window.addEventListener('keydown', (e) => {
 
 const getTime = (): TimeValues => timeOverride ?? getCurrentTime();
 
-// Share links wrapper (horizontal layout)
+// Share links wrapper (horizontal layout, single line, never wraps)
 const shareWrap = document.createElement('div');
 shareWrap.style.cssText = [
   'position:fixed',
@@ -127,24 +149,33 @@ shareWrap.style.cssText = [
   'display:flex',
   'align-items:center',
   'gap:8px',
+  'white-space:nowrap',
+  // Constrain to viewport so the dynamic font scale below has a basis
+  'max-width:calc(100vw - 24px)',
+  // 16px type always (no text under 16px); the labels' letter spacing tightens on
+  // narrow phones instead, so "SHARE YOUR TIME · ANY TIME" stays on one line.
+  'font-size:16px',
 ].join(';');
 
 const shareLink = createShareLink(canvas, config);
 const dot = document.createElement('span');
 dot.textContent = '\u00b7';
-dot.style.cssText = 'color:#e5e5eb;opacity:0.6;user-select:none;font-size:16px';
+dot.style.cssText = 'color:#e5e5eb;opacity:0.6;user-select:none;font-size:inherit;line-height:1';
 const anyTimeLink = createAnyTimeLink(() => {
   shareWrap.style.display = 'none';
+  handleResize();
   meetPicker.show();
 });
 shareWrap.append(shareLink, dot, anyTimeLink);
 document.body.appendChild(shareWrap);
+shareRow = shareWrap;
+handleResize();
 
 // Meet time picker
 const meetPicker = createMeetTimePicker(
   (time) => { timeOverride = time; },
   (time, date) => { void shareMeetImage(canvas, config, time, date); },
-  () => { timeOverride = null; shareWrap.style.display = 'flex'; },
+  () => { timeOverride = null; shareWrap.style.display = 'flex'; handleResize(); },
 );
 document.body.appendChild(meetPicker.element);
 

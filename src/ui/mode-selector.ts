@@ -34,16 +34,27 @@ export function createModeSelector(
   header.textContent = 'TRICLOCK';
   header.style.cssText = [
     'font-family:' + UI_FONT,
-    'font-size:clamp(11px, 1.5vw, 16px)',
+    'font-size:16px',
     'font-weight:600',
     'letter-spacing:0.35em',
     'color:#e5e5eb',
     'opacity:0.75',
     'cursor:pointer',
   ].join(';');
+  // Double-tap the TRICLOCK header to restart the intro (clears the hash and
+  // reloads). A single click is too easy to trigger by accident inside the
+  // iOS wrapper, so we require two taps within DOUBLE_TAP_MS.
+  const DOUBLE_TAP_MS = 350;
+  let lastHeaderTapAt = 0;
   header.addEventListener('click', () => {
-    window.history.replaceState(null, '', window.location.pathname);
-    window.location.reload();
+    const now = performance.now();
+    if (now - lastHeaderTapAt < DOUBLE_TAP_MS) {
+      lastHeaderTapAt = 0;
+      window.history.replaceState(null, '', window.location.pathname);
+      window.location.reload();
+      return;
+    }
+    lastHeaderTapAt = now;
   });
   const nav = document.createElement('nav');
   nav.style.cssText = [
@@ -63,8 +74,8 @@ export function createModeSelector(
       dot.style.cssText = [
         'color:#e5e5eb',
         'opacity:0.3',
-        'font-size:12px',
-        'padding:0 8px',
+        'font-size:16px',
+        'padding:0 4px',
         'pointer-events:none',
       ].join(';');
       nav.appendChild(dot);
@@ -76,9 +87,10 @@ export function createModeSelector(
       'background:none',
       'border:none',
       'cursor:pointer',
-      'padding:2px 6px',
+      // 16px type and a tall touch target: the reviewer and the player switch modes here
+      'padding:12px 8px',
       'font-family:' + UI_FONT,
-      'font-size:clamp(8px, 1vw, 11px)',
+      'font-size:16px',
       'font-weight:400',
       'text-transform:uppercase',
       'letter-spacing:0.18em',
