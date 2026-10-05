@@ -14,7 +14,8 @@ export interface HashParams {
 }
 
 function splitHash(): { primary: string; params: Map<string, string> } {
-  const raw = window.location.hash.slice(1);
+  // the iOS factory opens App Store screenshot scenes as #ios-maker-shot=<scene hash>
+  const raw = window.location.hash.slice(1).replace(/^ios-maker-shot=/, '');
   const parts = raw.split('&');
   const primary = parts[0] ?? '';
   const params = new Map<string, string>();
