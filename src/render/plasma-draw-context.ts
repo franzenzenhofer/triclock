@@ -10,6 +10,8 @@ export interface PlasmaBounds {
 export interface PlasmaDrawContext {
   readonly time: number;
   readonly bounds: PlasmaBounds;
+  /** the canvas's device pixel ratio: the colour field is drawn that sharp */
+  readonly dpr: number;
 }
 
 export function computePlasmaTime(nowMs: number, speed: number): number {
@@ -39,9 +41,11 @@ export function createPlasmaDrawContext(
   verts: TriangleVertices,
   nowMs: number,
   speed: number,
+  dpr: number,
 ): PlasmaDrawContext {
   return {
     time: computePlasmaTime(nowMs, speed),
     bounds: computePlasmaBounds(verts),
+    dpr,
   };
 }

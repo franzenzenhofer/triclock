@@ -22,7 +22,7 @@ export function renderFrame(
   const fracs = fractionalize(time);
   const baseHsl = computeBaseHsl(fracs, config.hsl);
   const verts = getTriangle(state.cx, state.cy, state.size, config.geometry);
-  const plasma = createPlasmaDrawContext(verts, performance.now(), config.triangles.plasma.speed);
+  const plasma = createPlasmaDrawContext(verts, performance.now(), config.triangles.plasma.speed, state.dpr);
 
   drawBackground(ctx, state, config);
   drawFrameLines(ctx, verts, config);

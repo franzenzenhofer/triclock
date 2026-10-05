@@ -27,8 +27,9 @@ describe('plasma draw context', () => {
   });
 
   it('combines per-frame time and stable bounds into one immutable draw context', () => {
-    expect(createPlasmaDrawContext(VERTS, 1000, 1.25)).toEqual({
+    expect(createPlasmaDrawContext(VERTS, 1000, 1.25, 3)).toEqual({
       time: 1.25,
+      dpr: 3,
       bounds: {
         x: 20,
         y: -5,

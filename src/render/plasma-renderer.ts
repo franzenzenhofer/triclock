@@ -43,10 +43,26 @@ function createQuad(gl: WebGL2RenderingContext, program: WebGLProgram): WebGLVer
   return vao;
 }
 
+/** the largest colour-field texture: the field is copied into the canvas once per triangle layer every frame,
+    in an app that keeps the screen on all day, so its size is a battery and heat budget */
+export const MAX_PLASMA_TEXTURE = 1536;
+/** the field is a soft, low-frequency glow: drawn at 2 device pixels per point it is indistinguishable from 3 */
+export const MAX_PLASMA_DENSITY = 2;
+
+/** the texture edge that covers the triangle's bounds at the screen's pixel density (never below `min`) */
+export function plasmaTextureSize(boundsW: number, boundsH: number, dpr: number, min: number): number {
+  const wanted = Math.ceil(Math.max(boundsW, boundsH) * Math.min(dpr, MAX_PLASMA_DENSITY));
+  return Math.min(MAX_PLASMA_TEXTURE, Math.max(min, wanted));
+}
+
 let instance: PlasmaRenderer | null = null;
+let resize: ((size: number) => void) | null = null;
 
 export function getPlasmaRenderer(size: number): PlasmaRenderer | null {
-  if (instance) return instance;
+  if (instance) {
+    if (instance.canvas.width !== size) resize?.(size);
+    return instance;
+  }
 
   if (typeof document === 'undefined') return null;
 
@@ -71,6 +87,12 @@ export function getPlasmaRenderer(size: number): PlasmaRenderer | null {
   const uTint = gl.getUniformLocation(prog, 'uTint');
 
   gl.uniform2f(uRes, size, size);
+  resize = (next: number): void => {
+    canvas.width = next;
+    canvas.height = next;
+    gl.viewport(0, 0, next, next);
+    gl.uniform2f(uRes, next, next);
+  };
 
   instance = {
     canvas,

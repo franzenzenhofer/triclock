@@ -4,7 +4,7 @@ import { hslToRgb01 } from '../color/hsl-to-rgb01.js';
 import { brightColor } from '../color/bright-color.js';
 import type { HslConfig } from '../types/config.js';
 import { drawTrianglePath } from './draw-triangle-path.js';
-import { getPlasmaRenderer } from './plasma-renderer.js';
+import { getPlasmaRenderer, plasmaTextureSize } from './plasma-renderer.js';
 import type { PlasmaDrawContext } from './plasma-draw-context.js';
 
 export function drawColorTriangle(
@@ -36,7 +36,8 @@ export function drawColorTriangle(
   ctx.fill();
 
   if (tc.plasma.enabled) {
-    const pr = getPlasmaRenderer(tc.plasma.textureSize);
+    const b = plasma.bounds;
+    const pr = getPlasmaRenderer(plasmaTextureSize(b.width, b.height, plasma.dpr, tc.plasma.textureSize));
     if (pr) {
       const [r, g, b] = hslToRgb01(hue, sat, lit);
       pr.render(plasma.time, r, g, b, plasmaPhase);

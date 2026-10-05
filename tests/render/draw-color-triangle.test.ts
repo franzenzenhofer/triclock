@@ -7,7 +7,8 @@ const render = vi.fn();
 const drawImage = vi.fn();
 const plasmaCanvas = {} as HTMLCanvasElement;
 
-vi.mock('../../src/render/plasma-renderer.js', () => ({
+vi.mock('../../src/render/plasma-renderer.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../src/render/plasma-renderer.js')>()),
   getPlasmaRenderer: vi.fn(() => ({
     canvas: plasmaCanvas,
     render,
@@ -62,6 +63,7 @@ describe('drawColorTriangle', () => {
       {
         time: 12.5,
         bounds: { x: 5, y: 6, width: 90, height: 90 },
+        dpr: 1,
       },
     );
 
@@ -87,6 +89,7 @@ describe('drawColorTriangle', () => {
       {
         time: 12.5,
         bounds: { x: 5, y: 6, width: 90, height: 90 },
+        dpr: 1,
       },
     );
 
