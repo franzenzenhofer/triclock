@@ -11,6 +11,7 @@ import {
   createShareLink, createModeSelector, applyDisplayMode,
   createFullscreenToggle, createMeetTimePicker, createAnyTimeLink,
   shareMeetImage, createInstallButton, startOnboarding,
+  hasSeenOnboarding, markOnboardingSeen,
 } from './ui/index.js';
 import { dumpState } from './debug/dump-state.js';
 
@@ -28,11 +29,10 @@ if (!hashParams.plasma) {
 }
 
 const hasHash = !!hashMode || !!hashOverrides || !!hashParams.time;
-// Play the mode-cycling intro on every cold start (web and native iOS).
-// In the wrapper, "cold start" means each launch after the user kills the
-// app, which is exactly what we want. A hash override (deep link) still
-// skips the intro so deep-linked time/share URLs land instantly.
-const needsOnboarding = !hasHash;
+// Play the mode-cycling intro only on the first launch ever (web and native
+// iOS); every later launch goes straight to the clock. A hash override (deep
+// link) skips the intro so deep-linked time/share URLs land instantly.
+const needsOnboarding = !hasHash && !hasSeenOnboarding();
 
 // Digital time is visible by default. Tap to toggle off.
 
@@ -180,8 +180,10 @@ const meetPicker = createMeetTimePicker(
 document.body.appendChild(meetPicker.element);
 
 // Onboarding: fade through modes for first-time visitors
-// Pure → Prism → Pure → Flux → Pure (~7s total)
+// Pure → Prism → Flux (~5.5s total). Marked seen as it starts, so killing
+// the app mid-intro does not replay it.
 if (needsOnboarding) {
+  markOnboardingSeen();
   modeSelector.setOnboarding(true);
   const rawCancel = startOnboarding(
     canvas,
